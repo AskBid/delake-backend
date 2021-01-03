@@ -23,7 +23,11 @@ default: &default
 
 development:
   <<: *default
-  database: 'swan_db_sync'
+  database: 'cexplorer'
+  username: <%= ENV['HOST_PG_DATABASE_USERNAME'] %>
+  password: <%= ENV['HOST_PG_DATABASE_PASSWORD'] %>
+  host: <%= ENV['HOST_PG_DATABASE_IP'] %>
+  port: <%= ENV['HOST_PG_PORT'] %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -55,6 +59,7 @@ development:
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
+
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
