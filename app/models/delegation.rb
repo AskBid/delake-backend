@@ -1,4 +1,4 @@
-class Delegation < ApplicationRecord
+class Delegation < DbSyncRecords
 	# those are only the new delegations that became effective on this epoch
 	# the epoch refers to the epoch in which the delegation was effective for the blocks lottery
 	# effective epoch = epoch of transaction + 2
