@@ -1,0 +1,12 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
+development:
+  <<: *default
+  database: 'cexplorer'
+  username: <%= ENV['HOST_PG_DATABASE_USERNAME'] %>
+  password: <%= ENV['HOST_PG_DATABASE_PASSWORD'] %>
+  host: <%= ENV['HOST_PG_DATABASE_IP'] %>
+  port: 5432

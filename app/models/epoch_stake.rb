@@ -1,4 +1,4 @@
-class EpochStake < DbSyncRecord
+class EpochStake < ApplicationRecord
 	# those are active_delegation, so all the delegations that are effective this epocj, old and new
 	# the epoch refers to the epoch in which the delegation was effective for the blocks lottery
 	# effective epoch = epoch of transaction + 2

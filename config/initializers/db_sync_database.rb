@@ -1,1 +1,1 @@
-DB_SYNC_DB = YAML.load_file(File.join(Rails.root, "config", "dg-sync-database.yml"))[Rails.env.to_s]
+DB_SYNC_DB = YAML.load_file(File.join(Rails.root, "config", "db_sync_database.yml"))[Rails.env.to_s]
