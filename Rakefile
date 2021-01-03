@@ -4,3 +4,86 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+
+task :getTickers => :environment do
+	PoolHash.all.each do |pool|
+		if !pool.ticker || pool.ticker.length > 5
+			puts ''
+			begin
+				puts " ----------------- Ticker read in local DB was: #{pool.ticker}"
+				if pool.url
+					ticker = read_pool_url_json(pool.url, pool.hashid)
+					 
+					if ticker && (ticker.length < 7)
+						pool.ticker = ticker
+						pool.save
+						puts pool.ticker
+					else
+						puts "no valid ticker found: #{ticker}"
+						puts pool.poolid
+					end
+				else
+					if !pool.ticker
+						if hashid
+							pool.ticker = pool.hashid.slice(0,6)
+							pool.save
+						end
+					else
+						print "``#{pool.ticker}"
+					end
+				end
+			rescue
+				"!!!!! no valid ticker found: #{ticker}"
+				"!!!!! ool.poolid: #{pool.poolid}"
+			end
+			puts '---------------------------------------------'
+			puts ''
+		else
+			print "``#{pool.ticker}"
+		end
+	end
+end
+
+
+
+def read_ticker_from_adapoolsDOTorg(hashid)
+	puts ' >>>>>>>>>>>>>>>>> INSIDE read_ticker_from_adapoolsDOTorg'
+	begin
+		resp = Net::HTTP.get_response(URI.parse("https://adapools.org/pool/#{hashid}"))
+		data = resp.body
+		res = data.split("data-id=\"#{hashid}\"")[1].split(']')[0].split('[')[1]
+		if res.length > 2 && res.length < 6
+			return res
+		else 
+			if hashid
+				return hashid.slice(0,6)
+			else
+				return nil
+			end
+		end
+	rescue
+		if hashid
+				return hashid.slice(0,6)
+		else
+			return nil
+		end
+	end
+end
+
+
+
+def read_pool_url_json(url, hashid)
+	attempt = 0
+	print ' >>>>>>>>>>>>>>>>> INSIDE read_pool_url_json :: '
+	begin
+		puts url
+		resp = Net::HTTP.get_response(URI.parse(url))
+		data = resp.body
+		json = JSON.parse(data)
+		return json['ticker']
+	rescue
+		puts ' >>>>>>>>>>>>>>>>> failed! ...'
+		read_ticker_from_adapoolsDOTorg(hashid)
+	end
+end
