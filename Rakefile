@@ -37,14 +37,14 @@ end
 
 
 
-def scrape_ticker(pool, hashid)
+def scrape_ticker(pool)
 	if !pool.ticker || pool.ticker.length > 5
 		puts ''
 		begin
 			puts " ----------------- Ticker read in local DB was: #{pool.ticker}"
 
 			if pool.url
-				ticker = read_pool_url_json(pool.url, hashid)
+				ticker = read_pool_url_json(pool.url, pool.hash_hex)
 				 
 				if ticker && (ticker.length < 7)
 					pool.ticker = ticker
@@ -52,12 +52,12 @@ def scrape_ticker(pool, hashid)
 					puts pool.ticker
 				else
 					puts "no valid ticker found: #{ticker}"
-					puts pool.poolid
+					puts pool.hash_hex
 				end
 			else
 				if !pool.ticker
-					if hashid
-						pool.ticker = hashid.slice(0,6)
+					if pool.hash_hex
+						pool.ticker = pool.hash_hex.slice(0,6)
 						pool.save
 					end
 				else
@@ -66,7 +66,7 @@ def scrape_ticker(pool, hashid)
 			end
 		rescue
 			"!!!!! no valid ticker found: #{ticker}"
-			"!!!!! ool.poolid: #{pool.poolid}"
+			"!!!!! pool.poolid: #{pool.hash_hex}"
 		end
 		puts '---------------------------------------------'
 		puts ''
