@@ -5,6 +5,8 @@ require_relative 'config/application'
 
 Rails.application.load_tasks
 
+require 'net/http'
+require 'net/https'
 
 task :get_tickers => :environment do
 	# SELECT pool_hash.*, pool_meta_data.url FROM pool_hash JOIN pool_update ON pool_update.hash_id = pool_hash.id JOIN pool_meta_data ON pool_update.meta_id = pool_meta_data.id;
@@ -50,7 +52,8 @@ def scrape_ticker(pool)
 	if !pool.ticker || pool.ticker.length > 5
 		puts ''
 		begin
-			puts " ----------------- Ticker read in local DB was: #{pool.ticker}"
+			puts ''
+			puts "----------------- Ticker read in local DB was: #{pool.ticker}"
 
 			if pool.url
 				ticker = read_pool_url_json(pool.url, pool.hash_hex)
@@ -61,7 +64,7 @@ def scrape_ticker(pool)
 					puts pool.ticker
 				else
 					puts "no valid ticker found: #{ticker}"
-					puts pool.hash_hex
+					puts "!!!!! pool.hex: #{pool.hash_hex}"
 				end
 			else
 				if !pool.ticker
@@ -75,7 +78,7 @@ def scrape_ticker(pool)
 			end
 		rescue
 			puts "!!!!! no valid ticker found: #{ticker}"
-			puts "!!!!! pool.poolid: #{pool.hash_hex}"
+			puts "!!!!! pool.hex: #{pool.hash_hex}"
 		end
 		puts '----------------------------- Ticker Search END'
 		puts ''
@@ -89,10 +92,10 @@ end
 def read_ticker_from_adapoolsDOTorg(hashid)
 	#\x158\x06\xDB\xCD\x13M\xDE\xE6\x9A\x8CR\x04\xE3\x8A\xC8\x04H\xF6#B\xF8\xC2<\xFEK~\xDF
 	#153806dbcd134ddee69a8c5204e38ac80448f62342f8c23cfe4b7edf
-	puts ' >>>>>>>>>>>>>>>>> INSIDE read_ticker_from_adapoolsDOTorg'
+	puts '>>>>>>>>>>>>>>>>> INSIDE read_ticker_from_adapoolsDOTorg'
 	begin
 		resp = Net::HTTP.get_response(URI.parse("https://adapools.org/pool/#{hashid}"))
-		puts "visiting https://adapools.org/pool/#{}"
+		puts "visiting https://adapools.org/pool/#{hashid}"
 		data = resp.body
 		res = data.split("data-id=\"#{hashid}\"")[1].split(']')[0].split('[')[1]
 		if res.length > 2 && res.length < 6
@@ -117,16 +120,15 @@ end
 
 def read_pool_url_json(url, hashid)
 	attempt = 0
-	print ' >>>>>>>>>>>>>>>>> INSIDE read_pool_url_json :: '
+	print '>>>>>>>>>>>>>>>>> INSIDE read_pool_url_json :: '
 	begin
 		puts url
-		byebug
 		resp = Net::HTTP.get_response(URI.parse(url))
 		data = resp.body
 		json = JSON.parse(data)
 		return json['ticker']
 	rescue
-		puts ' >>>>>>>>>>>>>>>>> failed! ...'
-		# read_ticker_from_adapoolsDOTorg(hashid)
+		puts '>>>>>>>>>>>>>>>>> failed! ...'
+		read_ticker_from_adapoolsDOTorg(hashid)
 	end
 end
