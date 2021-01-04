@@ -8,15 +8,24 @@ Rails.application.load_tasks
 
 task :get_tickers => :environment do
 	# SELECT pool_hash.*, pool_meta_data.url FROM pool_hash JOIN pool_update ON pool_update.hash_id = pool_hash.id JOIN pool_meta_data ON pool_update.meta_id = pool_meta_data.id;
-	pool_hashes = PoolUpdate.select("pool_hash.id pool_id, pool_hash.view pool_addr, pool_hash.hash_raw, pool_meta_data.url")
+	pool_hashes = PoolUpdate.select("pool_hash.id pool_hash_id, pool_hash.view pool_addr, pool_hash.hash_raw, pool_meta_data.url, pool_update.active_epoch_no")
 		.joins(:pool_hash)
 		.joins(:pool_meta_data)
-		.map {|pool_update| {id: pool_update.pool_id, pool_addr: pool_update.pool_addr, pool_hash: pool_update.hash_raw, url: pool_update.url} }
+		.map { |pool_update| {pool_hash_id: pool_update.pool_hash_id, pool_addr: pool_update.pool_addr, pool_hash: pool_update.hash_raw, url: pool_update.url, active_epoch_no: pool_update.active_epoch_no} }
 
-	pool_hashes.all.each do |pool_hash|
-		pool = Pool.find(pool_hash[:id])
+	pool_hashes_distinct = {}
+	pool_hashes.each do |data|
+		if !pool_hashes_distinct["#{data[:pool_hash_id]}"]
+			pool_hashes_distinct["#{data[:pool_hash_id]}"] = data
+		elsif pool_hashes_distinct["#{data[:pool_hash_id]}"][:active_epoch_no] < data[:active_epoch_no]
+			pool_hashes_distinct["#{data[:pool_hash_id]}"] = data
+		end
+	end
+
+	pool_hashes_distinct.each do |k, pool_hash|
+		pool = Pool.find_by_id(pool_hash[:pool_hash_id])
 		if pool
-			scrape_ticker(pool, pool.hash_hex)
+			scrape_ticker(pool)
 		else
 			pool = build_pool(pool_hash)
 			scrape_ticker(pool) if pool
@@ -29,7 +38,7 @@ end
 
 def build_pool(pool_hash)
 	pool = Pool.new(
-		pool_hash_id: pool_hash[:id],
+		pool_hash_id: pool_hash[:pool_hash_id],
 		url: pool_hash[:url], 
 		hash_hex: PoolHash.bin_to_hex(pool_hash[:pool_hash]))
 	pool if pool.save
@@ -65,10 +74,10 @@ def scrape_ticker(pool)
 				end
 			end
 		rescue
-			"!!!!! no valid ticker found: #{ticker}"
-			"!!!!! pool.poolid: #{pool.hash_hex}"
+			puts "!!!!! no valid ticker found: #{ticker}"
+			puts "!!!!! pool.poolid: #{pool.hash_hex}"
 		end
-		puts '---------------------------------------------'
+		puts '----------------------------- Ticker Search END'
 		puts ''
 	else
 		print "``#{pool.ticker}" #ticker already existed and is fine
@@ -111,6 +120,7 @@ def read_pool_url_json(url, hashid)
 	print ' >>>>>>>>>>>>>>>>> INSIDE read_pool_url_json :: '
 	begin
 		puts url
+		byebug
 		resp = Net::HTTP.get_response(URI.parse(url))
 		data = resp.body
 		json = JSON.parse(data)
