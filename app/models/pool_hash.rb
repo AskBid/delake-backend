@@ -4,8 +4,9 @@ class PoolHash < DbSyncRecord
 	has_many :epoch_stakes, foreign_key: :pool_id
 	has_many :delegations, foreign_key: :pool_hash_id
 	has_one :pool
+	has_many :pool_updates, foreign_key: :hash_id
 
-	def hash_raw
+	def hash_hex
 		bin_to_hex(self[:hash_raw])
 	end
 
