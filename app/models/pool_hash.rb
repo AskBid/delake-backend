@@ -7,12 +7,10 @@ class PoolHash < DbSyncRecord
 	has_many :pool_updates, foreign_key: :hash_id
 
 	def hash_hex
-		bin_to_hex(self[:hash_raw])
+		self.class.bin_to_hex(self[:hash_raw])
 	end
 
-	private
-
-	def bin_to_hex(s)
+	def self.bin_to_hex(s)
 	  s.unpack('H*').first
 	end
 end
