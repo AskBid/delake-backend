@@ -7,26 +7,44 @@ Rails.application.load_tasks
 
 
 task :get_tickers => :environment do
-	PoolHash.all.each do |pool_hash|
-		pool = pool_hash.pool
+	# SELECT pool_hash.*, pool_meta_data.url FROM pool_hash JOIN pool_update ON pool_update.hash_id = pool_hash.id JOIN pool_meta_data ON pool_update.meta_id = pool_meta_data.id;
+	pool_hashes = PoolUpdate.select("pool_hash.id pool_id, pool_hash.view pool_addr, pool_hash.hash_raw, pool_meta_data.url")
+		.joins(:pool_hash)
+		.joins(:pool_meta_data)
+		.map {|pool_update| {id: pool_update.pool_id, pool_addr: pool_update.pool_addr, pool_hash: pool_update.hash_raw, url: pool_update.url} }
+
+	pool_hashes.all.each do |pool_hash|
+		pool = Pool.find(pool_hash[:id])
 		if pool
-			scrape_ticker(pool)
+			scrape_ticker(pool, pool.hash_hex)
 		else
-			byebug
-			scrape_ticker(Pool.find_or_create_by(pool_hash_id: pool_hash.id))
+			pool = build_pool(pool_hash)
+			scrape_ticker(pool) if pool
+			puts "!!!! #{pool_hash[:pool_addr]} was not built!" if !pool
 		end
 	end
 end
 
 
 
-def scrape_ticker(pool)
+def build_pool(pool_hash)
+	pool = Pool.new(
+		pool_hash_id: pool_hash[:id],
+		url: pool_hash[:url], 
+		hash_hex: PoolHash.bin_to_hex(pool_hash[:pool_hash]))
+	pool if pool.save
+end
+
+
+
+def scrape_ticker(pool, hashid)
 	if !pool.ticker || pool.ticker.length > 5
 		puts ''
 		begin
 			puts " ----------------- Ticker read in local DB was: #{pool.ticker}"
+
 			if pool.url
-				ticker = read_pool_url_json(pool.url, pool.hashid)
+				ticker = read_pool_url_json(pool.url, hashid)
 				 
 				if ticker && (ticker.length < 7)
 					pool.ticker = ticker
@@ -39,7 +57,7 @@ def scrape_ticker(pool)
 			else
 				if !pool.ticker
 					if hashid
-						pool.ticker = pool.hashid.slice(0,6)
+						pool.ticker = hashid.slice(0,6)
 						pool.save
 					end
 				else
@@ -53,9 +71,10 @@ def scrape_ticker(pool)
 		puts '---------------------------------------------'
 		puts ''
 	else
-		print "``#{pool.ticker}"
+		print "``#{pool.ticker}" #ticker already existed and is fine
 	end
 end
+
 
 
 def read_ticker_from_adapoolsDOTorg(hashid)
@@ -64,6 +83,7 @@ def read_ticker_from_adapoolsDOTorg(hashid)
 	puts ' >>>>>>>>>>>>>>>>> INSIDE read_ticker_from_adapoolsDOTorg'
 	begin
 		resp = Net::HTTP.get_response(URI.parse("https://adapools.org/pool/#{hashid}"))
+		puts "visiting https://adapools.org/pool/#{}"
 		data = resp.body
 		res = data.split("data-id=\"#{hashid}\"")[1].split(']')[0].split('[')[1]
 		if res.length > 2 && res.length < 6
