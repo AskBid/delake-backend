@@ -123,7 +123,12 @@ def read_pool_url_json(url, hashid)
 	print '>>>>>>>>>>>>>>>>> INSIDE read_pool_url_json :: '
 	begin
 		puts url
-		resp = Net::HTTP.get_response(URI.parse(url))
+		uri = URI.parse(url)
+		Net::HTTP.new(uri.hostname, uri.port) do |http|
+		  http.open_timeout = 3000
+		  resp = http.request_get(uri.request_uri)
+		end
+		# resp = Net::HTTP.get_response(URI.parse(url))
 		data = resp.body
 		json = JSON.parse(data)
 		return json['ticker']
