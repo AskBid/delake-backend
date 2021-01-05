@@ -1,4 +1,7 @@
 class PoolHash < DbSyncRecord
+	#This is the actual Pool identity and Table on the cardano-db-sync
+	#Connects to local DB Table Pool which holds scrapes Tickers
+
 	self.table_name = 'pool_hash'
 	has_many :rewards, foreign_key: :pool_id
 	has_many :epoch_stakes, foreign_key: :pool_id
@@ -12,5 +15,12 @@ class PoolHash < DbSyncRecord
 
 	def self.bin_to_hex(s)
 	  s.unpack('H*').first
+	end
+
+	def size(epochNo)
+		(epoch_stakes
+			.epoch(epochNo)
+			.reduce(0) { |sum, num| sum + num[:amount] }
+			.to_i) / 1000000
 	end
 end
