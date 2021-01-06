@@ -33,7 +33,7 @@ class PoolHash < DbSyncRecord
 
 
 	def self.sizes(epochNo)
-		no_pools = []
+		rejects = {rejects: []}
 
 		self.all.map do |pool_hash|
 			size = pool_hash.size(epochNo)
@@ -43,12 +43,12 @@ class PoolHash < DbSyncRecord
 				pool_hash.pool.epoch_pool_sizes.build(size: size, epochno: epochNo)
 				pool_hash.pool.save
 			else
-				no_pools << pool_hash.view
+				rejects[:rejects] << pool_hash.view
 				print "       !!!!!! NO POOL for #{pool_hash.view}"
 				print "\r"
 			end
 		end
 
-		no_pools
+		rejects
 	end
 end
