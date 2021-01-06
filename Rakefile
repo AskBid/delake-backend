@@ -24,7 +24,6 @@ task :get_tickers => :environment do
 		end
 	end
 
-	binding.pry
 
 	pool_hashes_distinct.each do |k, pool_hash|
 		pool = Pool.find_by_id(pool_hash[:pool_hash_id])
@@ -44,7 +43,8 @@ def build_pool(pool_hash)
 	pool = Pool.new(
 		pool_hash_id: pool_hash[:pool_hash_id],
 		url: pool_hash[:url], 
-		hash_hex: PoolHash.bin_to_hex(pool_hash[:pool_hash]))
+		hash_hex: PoolHash.bin_to_hex(pool_hash[:pool_hash]
+		pool_addr: pool_hash[:pool_addr]))
 	pool if pool.save
 end
 
