@@ -24,6 +24,8 @@ task :get_tickers => :environment do
 		end
 	end
 
+	binding.pry
+
 	pool_hashes_distinct.each do |k, pool_hash|
 		pool = Pool.find_by_id(pool_hash[:pool_hash_id])
 		if pool
