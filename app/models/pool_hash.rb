@@ -9,13 +9,19 @@ class PoolHash < DbSyncRecord
 	has_one :pool
 	has_many :pool_updates, foreign_key: :hash_id
 
+
+
 	def hash_hex
 		self.class.bin_to_hex(self[:hash_raw])
 	end
 
+
+
 	def self.bin_to_hex(s)
 	  s.unpack('H*').first
 	end
+
+
 
 	def size(epochNo)
 		(epoch_stakes
@@ -24,17 +30,25 @@ class PoolHash < DbSyncRecord
 			.to_i) / 1000000
 	end
 
+
+
 	def self.sizes(epochNo)
+		no_pools = []
+
 		self.all.map do |pool_hash|
-			puts pool_hash.id
 			size = pool_hash.size(epochNo)
-			if pool_hash.pool && size > 1000
-				pool_hash.pool.epoch_pool_size.build(size: size)
-				# { ticker: pool_hash.pool.ticker, size: size, poolid: pool_hash.view } 
+			print pool_hash.id
+			print "\r"
+			if pool_hash.pool
+				pool_hash.pool.epoch_pool_sizes.build(size: size, epochno: epochNo)
+				pool_hash.pool.save
 			else
-				#usually if not pool_hash.pool is because the pool doesn't have a pool_meta_data
-				puts "!!!!!! NO POOL for #{pool_hash.view}"if !pool_hash.pool
+				no_pools << pool_hash.view
+				print "       !!!!!! NO POOL for #{pool_hash.view}"
+				print "\r"
 			end
 		end
+
+		no_pools
 	end
 end

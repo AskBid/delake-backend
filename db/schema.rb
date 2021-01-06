@@ -10,10 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_06_061044) do
+ActiveRecord::Schema.define(version: 2021_01_06_104028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "epoch_pool_sizes", force: :cascade do |t|
+    t.integer "size"
+    t.integer "epochno"
+    t.integer "pool_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "pools", force: :cascade do |t|
     t.string "ticker"
