@@ -9,58 +9,24 @@ require 'net/http'
 require 'net/https'
 
 
-task :get_epoch_pool_sizes => :environment do
+task :epoch_func => :environment do
 	ARGV.each { |a| task a.to_sym do ; end }
-	args = ARGV.slice(1,ARGV.length)
+	func = ARGV[1]
+	args = ARGV.slice(2,ARGV.length)
 	args = [Block.current_epoch] if args.empty?
 	args.each do |arg|
-		puts "epoch: #{arg}"
-		get_epoch_pool_sizes(arg)
+		puts "##{func} running for epoch: #{arg}"
+		send(func, arg)
 	end
 end
 
-task :re_ticker_epoch_pool_sizes_sizes => :environment do
-	#thi is only in case #get_epoch_pool_sizes is run before some pool tickers have been collected and you want to fix that 
-	ARGV.each { |a| task a.to_sym do ; end }
-	args = ARGV.slice(1,ARGV.length)
-	args = [Block.current_epoch] if args.empty?
-	args.each do |arg|
-		puts "epoch: #{arg}"
-		re_ticker_epoch_pool_sizes(arg)
-	end
-end
+
 
 task :get_tickers => :environment do
 	get_tickers
 end
 
-def get_epoch_pool_sizes(epochNo)
-	rejects = {rejects: []}
-	PoolHash.all.map do |pool_hash|
-		size = pool_hash.size(epochNo)
-		print pool_hash.id
-		print "\r"
-		if pool_hash.pool
-			pool_hash.pool.epoch_pool_sizes.build(size: size, epochno: epochNo, ticker: pool_hash.pool.ticker)
-			pool_hash.pool.save
-		else
-			rejects[:rejects] << pool_hash.view
-			print "       !!!!!! NO POOL for #{pool_hash.view}"
-			print "\r"
-		end
-	end
-	rejects
-end
 
-def re_ticker_epoch_pool_sizes(epochNo)
-	epss = EpochPoolSize.epoch(epochNo)
-	epss.each do |eps|
-		eps.ticker = eps.pool.ticker if eps.pool.ticker
-		print eps.ticker
-		print "\r"
-		eps.save
-	end
-end
 
 def get_tickers
 	# SELECT pool_hash.*, pool_meta_data.url FROM pool_hash JOIN pool_update ON pool_update.hash_id = pool_hash.id JOIN pool_meta_data ON pool_update.meta_id = pool_meta_data.id;
