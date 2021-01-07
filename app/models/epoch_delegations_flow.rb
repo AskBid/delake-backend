@@ -1,0 +1,2 @@
+class EpochDelegationsFlow < ApplicationRecord
+end

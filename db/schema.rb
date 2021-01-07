@@ -10,10 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_07_175412) do
+ActiveRecord::Schema.define(version: 2021_01_07_180842) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "epoch_delegations_flows", force: :cascade do |t|
+    t.integer "epochno"
+    t.text "json"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "pools", force: :cascade do |t|
     t.string "ticker"
