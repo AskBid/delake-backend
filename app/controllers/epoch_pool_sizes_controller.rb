@@ -1,8 +1,7 @@
 class EpochPoolSizesController < ApplicationController
 	def index
-		epoch_pool_sizes = EpochPoolSize.epoch(params[:epochno])
-		binding.pry
-		render json: epoch_pool_sizes, include: :pool, only: :size
+		epoch_pool_sizes = EpochPoolSize.epoch(params[:epochno]).where('size > 35000000')
+		render json: epoch_pool_sizes, only: [:size, :ticker]
 	end
 
 	def epochs
