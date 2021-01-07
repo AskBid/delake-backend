@@ -20,10 +20,17 @@ task :epoch_func => :environment do
 	end
 end
 
-
-
 task :get_tickers => :environment do
 	get_tickers
+end
+
+
+
+def write_epoch_flow(epochNo)
+	tempHash = Delegation.epoch_flow(epochNo)
+	# File.open("storage/#{epochNo}.json","w") do |f|
+	#   f.write(tempHash.to_json)
+	# end
 end
 
 

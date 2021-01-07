@@ -72,7 +72,6 @@ class Delegation < DbSyncRecord
 				end
 			end
 		end
-		binding.pry
 		table
 	end
 
