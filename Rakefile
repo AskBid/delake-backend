@@ -28,6 +28,10 @@ end
 
 def write_epoch_flow(epochNo)
 	tempHash = Delegation.epoch_flow(epochNo)
+	edf = EpochDelegationsFlow.find_or_create_by(epochno: epochNo)
+	edf.json = tempHash.to_json
+	edf.save
+	puts "Epoch Delegation Flow hash built"
 	# File.open("storage/#{epochNo}.json","w") do |f|
 	#   f.write(tempHash.to_json)
 	# end

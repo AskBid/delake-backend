@@ -26,6 +26,7 @@ class Delegation < DbSyncRecord
 	def self.epoch_flow(epochNo)
 		epoch_delegations = Delegation.epoch(epochNo)
 
+		puts "finding `from_pools`..."
 		from_pools = epoch_delegations.map do |delegation|
 			pool = delegation.from_pool
 			if pool
@@ -36,37 +37,49 @@ class Delegation < DbSyncRecord
 		end
 
 		to_pools = epoch_delegations.select('distinct(pool_hash_id)').map{ |d| d.pool_hash_id }
-		from_table = {}
+		# from_table = {}
 		table = {}
 
 		(from_pools + to_pools).each do |pool_hash_id|
-			from_table[pool_hash_id] = 0
+			table[pool_hash_id] = 0
 		end
 
-		from_table.each do |pool_hash_id, nil_placeholder_value|
+		puts "finding sizes..."
+		table.each do |pool_hash_id, nil_placeholder_value|
 			if pool_hash_id.is_a?(Integer)
 				ph = PoolHash.find_by_id(pool_hash_id)
 				size = ph.size(epochNo)
-				ticker = ph.pool.ticker if ph.pool
+				begin
+				ticker = ph.pool.ticker if ph
+			rescue
+				binding.pry
 			end
-			table[pool_hash_id] = {from: from_table.clone, size: nil, ticker: 'new_delegation'}
+			end
+			table[pool_hash_id] = {from: {}, size: size, ticker: ticker}
 		end
 
+		puts "building hash..."
 		delegations_by_pool = epoch_delegations.group_by(&:pool_hash_id)
 		delegations_by_pool.each do |pool_hash, delegations|
 			delegations.each do |delegation|
-				from_id = 'new_delegation'
-				pool = delegation.from_pool
-				if pool
-						from_id = delegation.from_pool.id
+				from_pool = delegation.from_pool
+				if !from_pool
+					from_id = 'new_delegation'
+				else
+					from_id = from_pool.id
 				end
-				puts delegation
 				begin
 					value = table[pool_hash][:from][from_id]
-					value += (delegation.stake_address.epoch_stakes.epoch(240).first.amount / 1000000)
+					if !value
+						table[pool_hash][:from][from_id] = 0
+						value = 0
+					end
+					print value
+					print "\r"
+					value += (delegation.stake_address.epoch_stakes.epoch(240).first.amount / 1000000).to_i
 					table[pool_hash][:from][from_id] += value
 				rescue
-					puts "#{delegation.stake_address} has a delegation but is probably not active or de-regidtered stake"
+					puts "#{delegation.stake_address.view} has a delegation but is probably not active or de-regidtered stake"
 					puts "no epoch_stake could be found so no amount was added."
 					puts "check if that's the case or perhaps was a different error and an amount skipped."
 				end
