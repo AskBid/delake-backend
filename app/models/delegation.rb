@@ -74,8 +74,6 @@ class Delegation < DbSyncRecord
 						table[pool_hash][:from][from_id] = 0
 						value = 0
 					end
-					print value
-					print "\r"
 					value += (delegation.stake_address.epoch_stakes.epoch(240).first.amount / 1000000).to_i
 					table[pool_hash][:from][from_id] += value
 				rescue
