@@ -14,6 +14,7 @@ task :get_epoch_pool_sizes => :environment do
 	args = ARGV.slice(1,ARGV.length)
 	args = [Block.current_epoch] if args.empty?
 	args.each do |arg|
+		puts "epoch: #{arg}"
 		get_epoch_pool_sizes(arg)
 	end
 end
@@ -24,6 +25,7 @@ task :re_ticker_epoch_pool_sizes_sizes => :environment do
 	args = ARGV.slice(1,ARGV.length)
 	args = [Block.current_epoch] if args.empty?
 	args.each do |arg|
+		puts "epoch: #{arg}"
 		re_ticker_epoch_pool_sizes(arg)
 	end
 end
@@ -54,6 +56,9 @@ def re_ticker_epoch_pool_sizes(epochNo)
 	epss = EpochPoolSize.epoch(epochNo)
 	epss.each do |eps|
 		eps.ticker = eps.pool.ticker if eps.pool.ticker
+		print eps.ticker
+		print "\r"
+		eps.save
 	end
 end
 
