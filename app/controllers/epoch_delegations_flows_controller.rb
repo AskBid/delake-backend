@@ -6,7 +6,6 @@ class EpochDelegationsFlowsController < ApplicationController
 	end
 
 	def index
-		binding.pry
 		edfs= EpochDelegationsFlow.all
 		render json: edfs, only: [:id, :epochno]
 	end

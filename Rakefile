@@ -9,7 +9,7 @@ require 'net/http'
 require 'net/https'
 
 
-task :epoch_func => :environment do
+task :func => :environment do
 	ARGV.each { |a| task a.to_sym do ; end }
 	func = ARGV[1]
 	args = ARGV.slice(2,ARGV.length)
@@ -26,7 +26,7 @@ end
 
 
 
-def write_epoch_flow(epochNo)
+def epoch_flow(epochNo)
 	tempHash = Delegation.epoch_flow(epochNo)
 	edf = EpochDelegationsFlow.find_or_create_by(epochno: epochNo)
 	edf.json = tempHash.to_json

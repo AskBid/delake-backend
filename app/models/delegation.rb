@@ -27,55 +27,58 @@ class Delegation < DbSyncRecord
 		epoch_delegations = Delegation.epoch(epochNo)
 
 		puts "finding `from_pools`..."
-		from_pools = epoch_delegations.map do |delegation|
+		from_pools = []
+		epoch_delegations.each do |delegation|
 			pool = delegation.from_pool
 			if pool
-				delegation.from_pool.id
-			else
-				'new_delegation'
+				from_pools << pool.id
 			end
 		end
 
 		to_pools = epoch_delegations.select('distinct(pool_hash_id)').map{ |d| d.pool_hash_id }
-		# from_table = {}
+
 		table = {}
 
-		(from_pools + to_pools).each do |pool_hash_id|
+		(from_pools.uniq + to_pools.uniq).each do |pool_hash_id|
 			table[pool_hash_id] = 0
 		end
 
 		puts "finding sizes..."
-		table.each do |pool_hash_id, nil_placeholder_value|
+		table.each do |pool_hash_id, zero_placeholder_value|
 			if pool_hash_id.is_a?(Integer)
 				ph = PoolHash.find_by_id(pool_hash_id)
 				size = ph.size(epochNo)
-				begin
-				ticker = ph.pool.ticker if ph
-			rescue
-				binding.pry
+				pool = ph.pool
+				if pool 
+					ticker = pool.ticker
+					pool_id = pool.id
+					pool_addr = pool.pool_addr
+				end
+				table[pool_hash_id] = {from: {}, size: size, ticker: ticker, pool_id: pool_id, pool_addr: pool_addr}
 			end
-			end
-			table[pool_hash_id] = {from: {}, size: size, ticker: ticker}
 		end
 
 		puts "building hash..."
 		delegations_by_pool = epoch_delegations.group_by(&:pool_hash_id)
-		delegations_by_pool.each do |pool_hash, delegations|
+
+		delegations_by_pool.each do |pool_hash_id, delegations|
 			delegations.each do |delegation|
-				from_pool = delegation.from_pool
-				if !from_pool
-					from_id = 'new_delegation'
+				from_pool_hash = delegation.from_pool
+				if !from_pool_hash
+					from_pool_hash_id = 'new_delegation'
 				else
-					from_id = from_pool.id
+					from_pool_hash_id = from_pool_hash.id
 				end
+
 				begin
-					value = table[pool_hash][:from][from_id]
+					value = table[pool_hash_id][:from][from_pool_hash_id]
 					if !value
-						table[pool_hash][:from][from_id] = 0
+						table[pool_hash_id][:from][from_pool_hash_id] = 0
 						value = 0
 					end
-					value += (delegation.stake_address.epoch_stakes.epoch(240).first.amount / 1000000).to_i
-					table[pool_hash][:from][from_id] += value
+					save_value = value
+					value += (delegation.stake_address.epoch_stakes.epoch(epochNo).first.amount/1000000).to_i
+					table[pool_hash_id][:from][from_pool_hash_id] = value
 				rescue
 					puts "#{delegation.stake_address.view} has a delegation but is probably not active or de-regidtered stake"
 					puts "no epoch_stake could be found so no amount was added."
@@ -85,5 +88,4 @@ class Delegation < DbSyncRecord
 		end
 		table
 	end
-
 end
