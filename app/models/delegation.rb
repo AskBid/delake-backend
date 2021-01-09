@@ -64,25 +64,31 @@ class Delegation < DbSyncRecord
 		delegations_by_pool.each do |pool_hash_id, delegations|
 			delegations.each do |delegation|
 				from_pool_hash = delegation.from_pool
+
 				if !from_pool_hash
 					from_pool_hash_id = 'new_delegation'
 				else
 					from_pool_hash_id = from_pool_hash.id
 				end
-
-				begin
-					value = table[pool_hash_id][:from][from_pool_hash_id]
-					if !value
-						table[pool_hash_id][:from][from_pool_hash_id] = 0
-						value = 0
+				if from_pool_hash_id != pool_hash_id
+					begin
+						value = table[pool_hash_id][:from][from_pool_hash_id]
+						if !value
+							table[pool_hash_id][:from][from_pool_hash_id] = 0
+							value = 0
+						end
+						save_value = value
+						value += (delegation.stake_address.epoch_stakes.epoch(epochNo).first.amount/1000000).to_i
+						table[pool_hash_id][:from][from_pool_hash_id] = value
+						puts "delegation added. #{from_pool_hash_id} >>> #{pool_hash_id}"
+					rescue
+						puts "#{delegation.stake_address.view} has a delegation but is probably not active or de-regidtered stake"
+						puts "no epoch_stake could be found so no amount was added."
+						puts "check if that's the case or perhaps was a different error and an amount skipped."
 					end
-					save_value = value
-					value += (delegation.stake_address.epoch_stakes.epoch(epochNo).first.amount/1000000).to_i
-					table[pool_hash_id][:from][from_pool_hash_id] = value
-				rescue
-					puts "#{delegation.stake_address.view} has a delegation but is probably not active or de-regidtered stake"
-					puts "no epoch_stake could be found so no amount was added."
-					puts "check if that's the case or perhaps was a different error and an amount skipped."
+				else
+					puts "stake #{delegation.stake_address.view} redelegated to same pool. Delegation skipped."
+					puts "#{from_pool_hash_id} >>> #{pool_hash_id}"
 				end
 			end
 		end
