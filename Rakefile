@@ -24,6 +24,13 @@ task :get_tickers => :environment do
 	get_tickers
 end
 
+task :write_JSON_EDF => :environment do
+	ARGV.each { |a| task a.to_sym do ; end }
+	id = ARGV[1]
+	edf = EpochDelegationsFlow.find(id)
+	edf_json = JSON.parse(edf.json)
+	File.write("./edf#{edf.epochno}.json", JSON.dump(edf_json))
+end
 
 
 def epoch_flow(epochNo)
