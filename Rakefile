@@ -26,10 +26,12 @@ end
 
 task :write_JSON_EDF => :environment do
 	ARGV.each { |a| task a.to_sym do ; end }
-	id = ARGV[1]
-	edf = EpochDelegationsFlow.find(id)
-	edf_json = JSON.parse(edf.json)
-	File.write("./edf#{edf.epochno}.json", JSON.dump(edf_json))
+	epochs = ARGV.slice(1,ARGV.length)
+	epochs.each do |epoch|
+		edf = EpochDelegationsFlow.find_by(epochno: epoch)
+		edf_json = JSON.parse(edf.json)
+		File.write("./edf#{edf.epochno}.json", JSON.dump(edf_json))
+	end
 end
 
 
