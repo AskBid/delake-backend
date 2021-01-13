@@ -54,7 +54,7 @@ class Delegation < DbSyncRecord
 					pool_id = pool.id
 					pool_addr = pool.pool_addr
 				end
-				table[pool_hash_id] = {from: {}, size: size, ticker: ticker, pool_id: pool_id, pool_addr: pool_addr}
+				table[pool_hash_id] = {from: {}, size: size, ticker: ticker, pool_id: pool_id}
 			end
 		end
 
