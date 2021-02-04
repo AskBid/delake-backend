@@ -30,8 +30,41 @@ task :write_JSON_EDF => :environment do
 	epochs.each do |epoch|
 		edf = EpochDelegationsFlow.find_by(epochno: epoch)
 		edf_json = JSON.parse(edf.json)
-		File.write("./edf#{edf.epochno}.json", JSON.dump(edf_json))
+		File.write("/Users/sergio/Documents/github/swan-to-db-sync-frontend/assets/edf#{edf.epochno}.json", JSON.dump(edf_json))
 	end
+end
+
+task :chart => :environment do
+	chart_json
+end
+
+def add_to_chart_json
+	current_epoch = Block.current_epoch
+	file = File.read('/Users/sergio/Documents/github/swan-to-db-sync-frontend/assets/chart_stake_addresses.json')
+	data_hash = JSON.parse(file)
+	byebug
+	data_hash[current_epoch] = {
+		total_delegation: EpochStake.total_staked(current_epoch),
+		stake_addresses_No: EpochStake.epoch(current_epoch)
+	}
+	chart_json = JSON.parse(data_hash)
+	File.write("/Users/sergio/Documents/github/swan-to-db-sync-frontend/assets/chart_stake_addresses.json", JSON.dump(chart_json))
+end
+
+def chart_json
+	current_epoch = Block.current_epoch
+	chart = {}
+	while current_epoch >= 210 do
+		puts current_epoch
+		chart[current_epoch] = {
+			total_delegation: (EpochStake.total_staked(current_epoch) / 1000000).to_i,
+			stake_addresses_No: EpochStake.epoch(current_epoch).count
+		}
+		current_epoch -= 1
+	end
+	# binding.pry
+	# chart_json = JSON.parse(chart)
+	File.write("/Users/sergio/Documents/github/swan-to-db-sync-frontend/assets/chart_stake_addresses.json", JSON.dump(chart))
 end
 
 
@@ -65,7 +98,7 @@ def get_tickers
 	end
 
 	pool_hashes_distinct.each do |k, pool_hash|
-		pool = Pool.find_by_id(pool_hash[:pool_hash_id])
+		pool = Pool.find_by(pool_addr: pool_hash[:pool_addr])
 		if pool
 			scrape_ticker(pool)
 		else
@@ -81,8 +114,8 @@ def build_pool(pool_hash)
 	pool = Pool.new(
 		pool_hash_id: pool_hash[:pool_hash_id],
 		url: pool_hash[:url],
-		hash_hex: PoolHash.bin_to_hex(pool_hash[:pool_hash],
-		pool_addr: pool_hash[:pool_addr]))
+		hash_hex: PoolHash.bin_to_hex(pool_hash[:pool_hash]),
+		pool_addr: pool_hash[:pool_addr])
 	pool if pool.save
 end
 
