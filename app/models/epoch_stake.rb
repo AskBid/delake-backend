@@ -8,4 +8,12 @@ class EpochStake < DbSyncRecord
 	belongs_to :pool_hash, foreign_key: :pool_id
 
 	scope :epoch, -> (epochno) {where('epoch_no = ?', epochno)}
+
+	def self.total_staked(epochno)
+		self.epoch(epochno).map{|stake| stake.amount}.inject(0){|sum,amount| sum + amount}
+	end
+
+	def delta
+		
+	end
 end
