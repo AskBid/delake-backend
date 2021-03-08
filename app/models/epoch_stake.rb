@@ -8,12 +8,23 @@ class EpochStake < DbSyncRecord
 	belongs_to :pool_hash, foreign_key: :pool_id
 
 	scope :epoch, -> (epochno) {where('epoch_no = ?', epochno)}
+	scope :by_addr_id, -> (addr_id) {where('addr_id = ?', addr_id)}
 
 	def self.total_staked(epochno)
 		self.epoch(epochno).map{|stake| stake.amount}.inject(0){|sum,amount| sum + amount}
 	end
 
-	def delta
-		
+	def previous
+		EpochStake.by_addr_id(self.addr_id)
+			.where('epoch_no < ?', self.epoch_no)
+			.order(epoch_no: :desc).first
+	end
+
+	def delta 
+		if self.previous
+			self.amount - self.previous.amount
+		else 
+			self.amount
+		end
 	end
 end
