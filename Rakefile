@@ -34,37 +34,12 @@ task :write_JSON_EDF => :environment do
 	end
 end
 
-task :chart => :environment do
-	chart_json
-end
 
-def add_to_chart_json
-	current_epoch = Block.current_epoch
-	file = File.read('/Users/sergio/Documents/github/swan-to-db-sync-frontend/assets/chart_stake_addresses.json')
-	data_hash = JSON.parse(file)
-	byebug
-	data_hash[current_epoch] = {
-		total_delegation: EpochStake.total_staked(current_epoch),
-		stake_addresses_No: EpochStake.epoch(current_epoch)
-	}
-	chart_json = JSON.parse(data_hash)
-	File.write("/Users/sergio/Documents/github/swan-to-db-sync-frontend/assets/chart_stake_addresses.json", JSON.dump(chart_json))
-end
-
-def chart_json
-	current_epoch = Block.current_epoch
-	chart = {}
-	while current_epoch >= 210 do
-		puts current_epoch
-		chart[current_epoch] = {
-			total_delegation: (EpochStake.total_staked(current_epoch) / 1000000).to_i,
-			stake_addresses_No: EpochStake.epoch(current_epoch).count
-		}
-		current_epoch -= 1
-	end
-	# binding.pry
-	# chart_json = JSON.parse(chart)
-	File.write("/Users/sergio/Documents/github/swan-to-db-sync-frontend/assets/chart_stake_addresses.json", JSON.dump(chart))
+def record_supply(epochNo)
+	current_supply = Tx.current_supply
+	puts "current supply: #{current_supply} ADA"
+	er = EpochRecord.find_or_create_by(epoch_no: epochNo)
+	er.update(supply: current_supply)
 end
 
 

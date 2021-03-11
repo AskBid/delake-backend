@@ -1,0 +1,5 @@
+class ChangeIntegerLimitToEpochRecord < ActiveRecord::Migration[6.0]
+  def change
+  	change_column :epoch_records, :supply, :bigint
+  end
+end
