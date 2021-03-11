@@ -6,6 +6,10 @@ class Block < DbSyncRecord
 	# scope :last_block, -> {where("block_no IS NOT NULL").order(epoch_no: :desc).limit(1)}
 	scope :epoch, -> (epoch_no) {where("epoch_no = ?", epoch_no)}
 
+	def epoch_param
+		EpochParam.find_by({epoch_no: self.epoch_no})
+	end
+
 	def self.current_epoch
 		Block.last.epoch_no
 	end
