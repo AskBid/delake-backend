@@ -4,4 +4,5 @@ class PoolUpdate < DbSyncRecord
 	belongs_to :pool_hash, foreign_key: :hash_id
 
 	scope :latest, -> { order(active_epoch_no: :DESC).limit(1).first }
+	scope :epoch, -> (epoch_no) { where("active_epoch_no <= ?", epoch_no) }
 end
