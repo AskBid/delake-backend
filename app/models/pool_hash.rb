@@ -22,7 +22,7 @@ class PoolHash < DbSyncRecord
 	def size(epochNo)
 		(self.epoch_stakes
 			.epoch(epochNo)
-			.reduce(0) { |sum, num| sum + num[:amount] }
+			.sum('amount')
 			.to_i) / 1000000
 	end
 end

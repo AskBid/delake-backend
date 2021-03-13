@@ -7,9 +7,9 @@ class Pool < ApplicationRecord
 	def calc_rewards(epoch_no = Block.current_epoch, whole = false)
 		ep = EpochParam.find_by({epoch_no: epoch_no})
 		@pool_size = self.pool_hash.size(ep[:epoch_no]) 
-		rewards = (optimal_reward(ep) * apparent_pool_performance(ep)) if ep
-		if !whole
-			pool_param = self.pool_hash.pool_updates.epoch(epoch_no).latest
+		pool_param = self.pool_hash.pool_updates.epoch(epoch_no).latest
+		rewards = (optimal_reward(ep, pool_param) * apparent_pool_performance(ep)) if ep
+		if !whole && ep
 			rewards = (rewards - (pool_param[:fixed_cost]/1000000)) * (1 - pool_param[:margin])
 		end
 		rewards.to_i
@@ -18,16 +18,15 @@ class Pool < ApplicationRecord
 	private
 	#for a video explanation of the formulas https://www.youtube.com/watch?v=0S5R2boqYLc
 	#for an article explaining the formulas https://viperstaking.com/ada-pools/expected-epoch-blocks
-	def optimal_reward(ep, a0)
-		(ep._R / (1 + ep[:influence])) * fso2(ep,a0)
-	end
-
-	def fso2(ep,a0)
+	def optimal_reward(ep, pool_param)
+		_R = ep._R
 		o1 = self.pool_size / ep._T.to_f
-		s1 = (self.pool_hash.pool_updates.epoch(ep[:epoch_no]).latest[:pledge] / 1000000) / ep._T.to_f
-		z0 = (1 / ep[:optimal_pool_count].to_f) * ep._T
+		s1 = (pool_param[:pledge] / 1000000) / ep._T.to_f
+		z0 = (1.0 / ep[:optimal_pool_count]) * ep._T
+		a0 = ep[:influence]
 		bigRatio = (o1-(s1*((z0-o1)/z0)))/z0
-		o1+((s1*a0)*bigRatio)
+		fso2 = o1+((s1*a0)*bigRatio)
+		(_R/(1 + a0)) * fso2
 	end
 
 	def apparent_pool_performance(ep)
