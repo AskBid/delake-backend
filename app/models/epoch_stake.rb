@@ -11,7 +11,14 @@ class EpochStake < DbSyncRecord
 	scope :by_addr_id, -> (addr_id) {where('addr_id = ?', addr_id)}
 
 	def self.total_staked(epochno)
-		self.epoch(epochno).map{|stake| stake.amount}.inject(0){|sum,amount| sum + amount}
+		self.epoch(epochno).sum("amount")
+	end
+
+	def calc_rewards(pool_hash = self.pool_hash)
+		rewards = pool_hash.pool.calc_rewards(self.epoch_no)
+		total_stakes = pool_hash.size(self.epoch_no)
+		puts self.amount/1000000
+		((self.amount/1000000) / total_stakes).to_f * rewards
 	end
 
 	def previous
