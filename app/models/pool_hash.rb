@@ -8,6 +8,8 @@ class PoolHash < DbSyncRecord
 	has_many :delegations, foreign_key: :pool_hash_id
 	has_one :pool
 	has_many :pool_updates, foreign_key: :hash_id
+	has_many :slot_leader
+	has_many :blocks, through: :slot_leader
 
 	def hash_hex
 		self.class.bin_to_hex(self[:hash_raw])
