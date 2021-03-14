@@ -36,14 +36,14 @@ end
 
 
 def record_supply(epochNo)
-	current_supply = Tx.current_supply
-	er = EpochRecord.find_or_create_by(epoch_no: epochNo)
-	puts "previous supply: #{er[:supply]} ADA"
-	puts er[:updated_at]
+	er = EpochRecord.find_by(epoch_no: epochNo)
+	prev_supply = er ? er.supply : 0
+	current_supply = DbSyncRecord.supply(epochNo, true)
+	puts "previous supply: #{prev_supply} ADA"
+	puts er[:updated_at] if er
 	puts "current supply:  #{current_supply} ADA"
 	puts Time.now
-	puts "difference:     +#{current_supply - er[:supply]} ADA"
-	er.update(supply: current_supply)
+	puts "difference:     +#{current_supply - prev_supply} ADA"
 end
 
 
