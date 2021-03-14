@@ -8,7 +8,8 @@ class DbSyncRecord < ActiveRecord::Base
   	if er
   		er[:supply]
   	else
-  		current_supply = Tx.current_supply
+  		current_supply = UtxoView.sum('value') + Reserve.sum('amount') + Reward.sum('amount') - Withdrawal.sum('amount')
+      current_supply = current_supply/1000000
   		EpochRecord.create(epoch_no: epoch_no, supply: current_supply)
   		current_supply
   	end

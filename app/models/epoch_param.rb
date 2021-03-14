@@ -7,5 +7,8 @@ class EpochParam < DbSyncRecord
   	@_T = _T
   	_Re = (45000000000 - _T) * self[:monetary_expand_rate]
   	_R = _Re * (1 - self[:treasury_growth_rate])
+  	puts "#{_R/1000000.to_f}M"
+  	puts _T
+  	_R
   end
 end

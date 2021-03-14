@@ -37,8 +37,12 @@ end
 
 def record_supply(epochNo)
 	current_supply = Tx.current_supply
-	puts "current supply: #{current_supply} ADA"
 	er = EpochRecord.find_or_create_by(epoch_no: epochNo)
+	puts "previous supply: #{er[:supply]} ADA"
+	puts er[:updated_at]
+	puts "current supply:  #{current_supply} ADA"
+	puts Time.now
+	puts "difference:     +#{current_supply - er[:supply]} ADA"
 	er.update(supply: current_supply)
 end
 
