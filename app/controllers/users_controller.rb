@@ -9,6 +9,10 @@ class UsersController < ApplicationController
     end
 	end
 
+  def show
+    render json: { user: UserSerializer.new(User.new(username: 'sergio'))}
+  end
+
   private 
 
   def user_params
