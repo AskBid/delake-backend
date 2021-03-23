@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
 	def create
+    # binding.pry
 		@user = User.create(user_params)
     if @user.valid?
       @token = encode_token(user_id: @user.id)
@@ -10,12 +11,12 @@ class UsersController < ApplicationController
 	end
 
   def show
-    render json: { user: UserSerializer.new(User.new(username: 'sergio'))}
+    render json: { user: UserSerializer.new(User.new(username: 'sergio')), jwt:' @token' }, status: :created
   end
 
   private 
 
   def user_params
-    params.require(:user).permit(:name, :email, :password)
+    params.require(:user).permit(:username, :email, :password)
   end
 end
