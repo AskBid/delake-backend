@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
     render json: { message: 'Please log in' }, 
     status: :unauthorized unless logged_in?
   end
-  binding.pry
+
   def logged_in?
     !!current_user
   end

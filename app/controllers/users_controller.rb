@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
 	def create
-    # binding.pry
 		@user = User.create(user_params)
     if @user.valid?
       @token = encode_token(user_id: @user.id)
@@ -17,6 +16,7 @@ class UsersController < ApplicationController
   private 
 
   def user_params
+    binding.pry
     params.require(:user).permit(:username, :email, :password)
   end
 end
