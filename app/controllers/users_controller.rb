@@ -3,10 +3,9 @@ class UsersController < ApplicationController
 		@user = User.create(user_params)
     if @user.valid?
       @token = encode_token(user_id: @user.id)
-      render json: { user: UserSerializer.new(@user), jwt: @token }, status: :created
+      render json: { alerts: {success: 'The user was registered successfully!'} }, status: :created
     else
-      # @user.errors.messages => {:password=>["can't be blank"], :username=>["has already been taken"]}
-      render json: { error: @user.errors.messages }, status: :not_acceptable
+      render json: { errors: @user.errors.messages }, status: :not_acceptable
     end
 	end
 
