@@ -3,7 +3,7 @@ class UsersController < ApplicationController
 		@user = User.create(user_params)
     if @user.valid?
       @token = encode_token(user_id: @user.id)
-      render json: { alerts: {success: 'The user was registered successfully!'} }, status: :created
+      render json: { alerts: {success: ["Registered successfully! You can now login as <b>#{@user.username}."]} }, status: :created
     else
       render json: { errors: @user.errors.messages }, status: :not_acceptable
     end
