@@ -2,11 +2,14 @@ class SessionsController < ApplicationController
   def create
     @user = User.find_by(username: session_params[:username])
     if @user && @user.authenticate(session_params[:password])
-    	# @token = encode_token(user_id: @user.id)
-      # render json: {username: @user.username, jwt: @token}, status: :created
-      render json: {username: @user.username}, status: :created
+    	@token = encode_token(user_id: @user.id)
+      render json: {
+      	username: @user.username,
+      	user_id: @user.id,
+      	jwt: @token
+      }, status: :created
     else
-      binding.pry
+      render json: { errors: "Username and/or password were wrong." }, status: :not_acceptable
     end
   end
 
