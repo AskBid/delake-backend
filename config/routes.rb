@@ -3,4 +3,6 @@ Rails.application.routes.draw do
   resources :pools, only: [:index]
   resources :users, only: [:show, :create]
   resources :epoch_delegations_flows, only: [:index, :show]
+  post '/login', to: 'sessions#create'
+	delete '/logout', to: 'sessions#destroy'
 end
