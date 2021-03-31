@@ -11,5 +11,10 @@ class StakeAddress < DbSyncRecord
 	has_many :epoch_stakes, foreign_key: :addr_id
 	has_many :utxo_views, foreign_key: :stake_address_id
 	has_many :user_stakes
-	has_many :users, through: :user_stakes
+	# below association wouldn't work because of the tables being in to different databases
+	# has_many :users, through: :user_stakes
+
+	def self.by_user(user)
+		StakeAddress.where(id:  user.user_stakes.pluck(:stake_address_id))
+	end
 end
