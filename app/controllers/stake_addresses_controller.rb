@@ -1,0 +1,2 @@
+class StakeAddressesController < ApplicationController
+end
