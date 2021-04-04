@@ -15,10 +15,20 @@ class EpochStake < DbSyncRecord
 	end
 
 	def calc_rewards(pool_hash = self.pool_hash)
-		rewards = pool_hash.calc_rewards(self.epoch_no)
-		total_stakes = pool_hash.size(self.epoch_no)
-		puts self.amount/1000000
-		((self.amount/1000000) / total_stakes).to_f * rewards
+		# rewards are known for epochs -2 from current epoch, therefore no need of calculation if < -2
+		# if < -2 we just query the rewards taht are already calculated on chain
+		if epoch_no > (Block.current_epoch - 2)
+			rewards = pool_hash.calc_rewards(self.epoch_no)
+			total_stakes = pool_hash.size(self.epoch_no)
+			puts self.amount/1000000
+			((self.amount/1000000) / total_stakes).to_f * rewards
+		else
+			rewards
+		end
+	end
+
+	def rewards
+		#to be written
 	end
 
 	def previous
