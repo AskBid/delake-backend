@@ -23,13 +23,16 @@ class EpochStake < DbSyncRecord
 			puts self.amount/1000000
 			((self.amount/1000000) / total_stakes).to_f * rewards
 		else
-			rewards
+			self.rewards
 		end
 	end
 
 	def rewards
-		Reward.where(addr_id: self.addr_id)
-			.where(epoch_no: self.epoch_no)
+		reward = Reward.where(addr_id: self.addr_id).where(epoch_no: self.epoch_no).first
+		if reward
+			reward = reward.amount.to_f / 1000000
+		end
+		reward
 	end
 
 	def previous
