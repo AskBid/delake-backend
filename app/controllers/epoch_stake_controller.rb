@@ -11,12 +11,13 @@ class EpochStakeController < ApplicationController
 		# binding.pry
 		render json: epoch_stakes, 
 			include: [
-				:stake_address, 
+				stake_address: {
+					only: [:id, :view],
+				},
 				pool_hash: {
-					only: [
-						:id, 
-						:view], 
-					include: [:pool]
+					only: [:id, :view], 
+					include: [pool:
+						only: [:id, :ticker, :url]]
 				}
 			],
 			only: [:id, :amount, :epoch_no],
