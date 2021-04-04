@@ -5,6 +5,7 @@ class StakeAddress < DbSyncRecord
 	#there is usually more than one pool_owner, but in reality there is only one per pool. 
 	#You can find which one is last by checking the tx=>block=>epoch
 	self.table_name = "stake_address"
+	self.ignored_columns = %w(hash_raw)
 	# self.table_name = "#{self.connection.current_database}.stake_address"
 	has_many :rewards, foreign_key: :addr_id
 	has_many :delegations, foreign_key: :addr_id
