@@ -6,7 +6,7 @@ class DbSyncRecord < ActiveRecord::Base
   def self.supply(epoch_no)
     er = EpochRecord.find_by(epoch_no: epoch_no)
   	if !er
-      er = EpochRecord.create_by(epoch_no: epoch_no)
+      er = EpochRecord.create(epoch_no: epoch_no)
   		er.update(supply: self.current_supply)
     elsif !er.supply
       er.update(supply: self.current_supply)

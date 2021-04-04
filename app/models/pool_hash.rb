@@ -29,14 +29,16 @@ class PoolHash < DbSyncRecord
 	end
 
 	def calc_rewards(epoch_no = Block.current_epoch, whole = false)
-		ep = EpochParam.find_by({epoch_no: epoch_no})
-		@pool_size = self.size(ep[:epoch_no]) 
-		pool_param = self.pool_updates.epoch(epoch_no).latest
-		rewards = (optimal_reward(ep, pool_param) * apparent_pool_performance(ep)) if ep
-		if !whole && ep
-			rewards = (rewards - (pool_param[:fixed_cost]/1000000)) * (1 - pool_param[:margin])
+		if !(epoch_no < (Block.current_epoch - 1))
+			ep = EpochParam.find_by({epoch_no: epoch_no})
+			@pool_size = self.size(ep[:epoch_no]) 
+			pool_param = self.pool_updates.epoch(epoch_no).latest
+			rewards = (optimal_reward(ep, pool_param) * apparent_pool_performance(ep)) if ep
+			if !whole && ep
+				rewards = (rewards - (pool_param[:fixed_cost]/1000000)) * (1 - pool_param[:margin])
+			end
+			rewards.to_i
 		end
-		rewards.to_i
 	end
 
 	private
