@@ -28,7 +28,8 @@ class EpochStake < DbSyncRecord
 	end
 
 	def rewards
-		#to be written
+		Reward.where(addr_id: self.addr_id)
+			.where(epoch_no: self.epoch_no)
 	end
 
 	def previous
