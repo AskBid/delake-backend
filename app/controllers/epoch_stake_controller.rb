@@ -8,8 +8,19 @@ class EpochStakeController < ApplicationController
 		# if I use group_by here the data is ready to use at front end, but can't use serializer
 		# without group_by front-end will need grouping by epoch but we can serialize including other models in epoch stakes 
 		epoch_stakes = EpochStake.where(addr_id: addr_ids).where(epoch_no: epochs)
-		binding.pry
-		# render json: epoch_stakes, include: [:stake_address]
-		render json: EpochStakeSerializer.new(epoch_stakes)
+		# binding.pry
+		render json: epoch_stakes, 
+			include: [
+				:stake_address, 
+				pool_hash: {
+					only: [
+						:id, 
+						:view], 
+					include: [:pool]
+				}
+			],
+			only: [:id, :amount, :epoch_no],
+			methods: :calc_rewards
+		# render json: EpochStakeSerializer.new(epoch_stakes)
 	end
 end

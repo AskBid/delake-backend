@@ -15,7 +15,7 @@ class EpochStake < DbSyncRecord
 	end
 
 	def calc_rewards(pool_hash = self.pool_hash)
-		rewards = pool_hash.pool.calc_rewards(self.epoch_no)
+		rewards = pool_hash.calc_rewards(self.epoch_no)
 		total_stakes = pool_hash.size(self.epoch_no)
 		puts self.amount/1000000
 		((self.amount/1000000) / total_stakes).to_f * rewards
