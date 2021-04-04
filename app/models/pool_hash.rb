@@ -13,9 +13,10 @@ class PoolHash < DbSyncRecord
 	has_many :slot_leader
 	has_many :blocks, through: :slot_leader
 
-	def hash_hex
-		self.class.bin_to_hex(self[:hash_raw])
-	end
+	# can't use because hash_raw ingored to be working with serializers
+	# def hash_hex
+	# 	self.class.bin_to_hex(self[:hash_raw])
+	# end
 
 	def self.bin_to_hex(s)
 	  s.unpack('H*').first
