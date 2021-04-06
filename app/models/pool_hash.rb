@@ -37,7 +37,7 @@ class PoolHash < DbSyncRecord
 		if !whole && ep
 			rewards = (rewards - (pool_param[:fixed_cost]/1000000)) * (1 - pool_param[:margin])
 		end
-		rewards.to_i
+		rewards.to_i > 0 ? rewards.to_i : 0
 	end
 
 	private
