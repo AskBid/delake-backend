@@ -7,7 +7,7 @@ class UserStakeController < ApplicationController
 				stake_address = StakeAddress.find_by(view: params[:stake_address])
 				if stake_address
 					user.stake_address = stake_address
-					render  status: :ok 
+					render EpochStakeSerializer.new(epoch_stakes).to_live_rewards_json, status: :ok 
 				else
 					render status: :not_found
 				end

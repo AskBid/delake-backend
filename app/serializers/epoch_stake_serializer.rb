@@ -23,6 +23,6 @@ class EpochStakeSerializer
 			],
 			only: [:id, :amount, :epoch_no],
 			methods: :calc_rewards}
-    @sighting.to_json(options)
+    @epoch_stake.to_json(options)
   end
 end
