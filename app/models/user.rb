@@ -14,8 +14,9 @@ class User < ApplicationRecord
   	StakeAddress.by_user(self)
  	end
 
- 	def stake_address=(stake_address)
- 		UserStake.create(user_id: self.id, stake_address_id: stake_address.id)
+ 	def add_stake_address(stake_address)
+ 		user_stake = UserStake.new(user_id: self.id, stake_address_id: stake_address.id)
+ 		user_stake.save
  	end
 
  	def delete_stake_address(stake_address)
