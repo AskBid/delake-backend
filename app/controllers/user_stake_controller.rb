@@ -32,7 +32,7 @@ class UserStakeController < ApplicationController
 	def destroy
 		user = User.find_by({username: params[:user_username]})
 		if user && user.id === current_user.id
-			user_stake = EpochStake.find_by(user_id: user.id, stake_address_id: params[:addr_id])
+			user_stake = UserStake.find_by(user_id: user.id, stake_address_id: params[:addr_id])
 			if user_stake
 				user_stake.delete
 				render json: {addr_id: params[:addr_id]}, status: :ok

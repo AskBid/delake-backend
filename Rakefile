@@ -30,7 +30,7 @@ task :write_JSON_EDF => :environment do
 	epochs.each do |epoch|
 		edf = EpochDelegationsFlow.find_by(epochno: epoch)
 		edf_json = JSON.parse(edf.json)
-		File.write("/Users/sergio/Documents/github/swan-to-db-sync-frontend/assets/edf#{edf.epochno}.json", JSON.dump(edf_json))
+		File.write("/Users/sergio/Documents/github/assets/edf#{edf.epochno}.json", JSON.dump(edf_json))
 	end
 end
 
