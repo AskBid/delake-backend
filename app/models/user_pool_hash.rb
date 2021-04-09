@@ -1,0 +1,2 @@
+class UserPoolHash < ApplicationRecord
+end
