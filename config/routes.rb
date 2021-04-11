@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :users, param: :username, only: [:show, :create] do
   	resources :epoch_stakes, only: [:index]
   	resources :user_stakes, param: :addr_id, only: [:create, :new, :destroy]
+    resources :user_pool_hashes, only: [:create, :index]
   end 
   resources :epoch_delegations_flows, only: [:index, :show]
   resources :blocks, only: [:show]
