@@ -17,7 +17,7 @@ class User < ApplicationRecord
   end
 
   def add_pool_hash(pool_hash)
-  	user_pool_hash = UserPoolHash.new(user_id: self.id, stake_address_id: pool_hash.id)
+  	user_pool_hash = UserPoolHash.new(user_id: self.id, pool_hash_id: pool_hash.id)
  		user_pool_hash.save
   end
 
