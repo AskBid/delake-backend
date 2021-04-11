@@ -40,7 +40,7 @@ class PoolHash < DbSyncRecord
 		ep = EpochParam.find_by({epoch_no: epoch_no})
 		@pool_size = self.size(ep[:epoch_no]) 
 		pool_param = self.pool_updates.epoch(epoch_no).latest
-		if ep && !pool_param.empty?
+		if ep && !(pool_param === [])
 			rewards = (optimal_reward(ep, pool_param) * apparent_pool_performance(ep)) 
 		else
 			return nil
