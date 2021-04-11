@@ -12,11 +12,17 @@ class PoolHash < DbSyncRecord
 	has_many :pool_updates, foreign_key: :hash_id
 	has_many :slot_leader
 	has_many :blocks, through: :slot_leader
+	has_many :user_pool_hashes
+	# has_many :users, through: :user_pool_hashes
 
 	# can't use because hash_raw ingored to be working with serializers
 	# def hash_hex
 	# 	self.class.bin_to_hex(self[:hash_raw])
 	# end
+
+	def self.by_user(user)
+		PoolHash.where(id:  user.user_pool_hashes.pluck(:pool_hash_id))
+	end
 
 	def self.bin_to_hex(s)
 	  s.unpack('H*').first

@@ -1,4 +1,4 @@
-class UserStakeController < ApplicationController
+class UserStakesController < ApplicationController
 
 	def create
 		user = User.find_by({username: params[:user_username]})

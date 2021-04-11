@@ -1,4 +1,4 @@
-class EpochStakeController < ApplicationController
+class EpochStakesController < ApplicationController
 	def index
 		user = User.find_by({username: params[:user_username]})
 		if user
