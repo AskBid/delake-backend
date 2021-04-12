@@ -11,13 +11,16 @@ class UserPoolHashesController < ApplicationController
       @compared_epoch_stakes = pool_hashes.map do |pool_hash|
         random_pool_epoch_stake = pool_hash.epoch_stakes.epoch(epoch_stake.epoch_no).first
         pool = pool_hash.pool
-        compared_epoch_stake = {rewards: epoch_stake.calc_rewards(pool_hash)}
+        compared_epoch_stake = {
+          calc_rewards: epoch_stake.calc_rewards(pool_hash),
+          amount: epoch_stake.amount,
+        }
         if random_pool_epoch_stake
           compared_epoch_stake[:blocks] = random_pool_epoch_stake.blocks
-          compared_epoch_stake[:estimated] = random_pool_epoch_stake.estimated_blocks
+          compared_epoch_stake[:estimated_blocks] = random_pool_epoch_stake.estimated_blocks
         end
         if pool
-          compared_epoch_stake[:ticker] = pool.ticker
+          compared_epoch_stake[:pool_hash] = {pool: {ticker: pool.ticker}}
         end
         compared_epoch_stake
       end
