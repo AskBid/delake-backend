@@ -14,4 +14,13 @@ class EpochStakesController < ApplicationController
 			render status: :not_found
 		end
 	end
+
+	def show
+		@epoch_stake = EpochStake.find_by(id: params[:id])
+		if @epoch_stake
+			render json: EpochStakeSerializer.new(@epoch_stake).to_live_rewards_json, status: :ok
+		else
+			render status: :not_found
+		end
+	end
 end
