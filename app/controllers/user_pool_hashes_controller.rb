@@ -14,13 +14,25 @@ class UserPoolHashesController < ApplicationController
         compared_epoch_stake = {
           calc_rewards: epoch_stake.calc_rewards(pool_hash),
           amount: epoch_stake.amount,
+          stake_address: {id: epoch_stake.stake_address.id}
         }
         if random_pool_epoch_stake
           compared_epoch_stake[:blocks] = random_pool_epoch_stake.blocks
           compared_epoch_stake[:estimated_blocks] = random_pool_epoch_stake.estimated_blocks
+        else
+          compared_epoch_stake[:blocks] = 0
+          compared_epoch_stake[:estimated_blocks] = 0
         end
         if pool
-          compared_epoch_stake[:pool_hash] = {pool: {ticker: pool.ticker}}
+          compared_epoch_stake[:pool_hash] = {
+            pool: {ticker: pool.ticker},
+            id: pool_hash.id
+          }
+        else
+          compared_epoch_stake[:pool_hash] = {
+            pool: {ticker: '---'},
+            id: pool_hash.id
+          }
         end
         compared_epoch_stake
       end
