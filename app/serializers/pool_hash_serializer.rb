@@ -9,6 +9,7 @@ class PoolHashSerializer
 	    pool = pool_hash.pool
 	    compared_epoch_stake = {
 	      calc_rewards: epoch_stake.calc_rewards(pool_hash),
+	      amount: epoch_stake.amount,
 	      stake_address: {id: epoch_stake.stake_address.id}
 	    }
 	    if any_pool_epoch_stake
@@ -33,5 +34,5 @@ class PoolHashSerializer
 	    compared_epoch_stake
 	  end
 	end
-	
+
 end
