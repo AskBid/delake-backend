@@ -11,9 +11,9 @@ class UserPoolHashesController < ApplicationController
       end
       if @pool_hash
         if user.add_pool_hash(@pool_hash)
-          render status: :created
+          render json: {user_id: user.id, pool_hash_id: pool_hash.id }, status: :created
         else
-          render json: {error: "#{params[:ticker]} is already followed from #{params[:user_username]}."}, status: :not_acceptable
+          render json: {error: "Pool #{params[:ticker]} is already followed from #{params[:user_username]}."}, status: :not_acceptable
         end
       else
         render json: {error: "#{params[:ticker]} Pool not found."}, status: :not_found
