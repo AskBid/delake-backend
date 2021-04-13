@@ -1,6 +1,21 @@
 class UserPoolHashesController < ApplicationController
 
   def create
+    user = User.find_by({username: params[:user_username]})
+    if user && user.id === current_user.id
+      pool = Pool.find_by(ticker: params[:ticker])
+      if pool
+        @pool_hash = pool.pool_hash
+      else
+        @pool_hash = HashPool.find_by(ticker: params[:ticker]) if params[:ticker].include?('pool1')
+      end
+      if @pool_hash
+        user.add_pool_hash(@pool_hash)
+      end
+    else
+      render json: {error: "#{current_user} cannot add a pool to #{params[:user_username]}"}, status: :unauthorized
+    end
+    binding.pry
   end  
 
   def index
