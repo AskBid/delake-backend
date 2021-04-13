@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   resources :epoch_delegations_flows, only: [:index, :show]
   resources :blocks, only: [:show]
   resources :epoch_stakes, only: [:show]
-  resources :user_pool_hashes, only: [:show]
+  resources :user_pool_hashes, only: [:show, :destroy]
 
   post '/login', to: 'sessions#create'
 	delete '/logout', to: 'sessions#destroy'

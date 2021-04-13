@@ -46,4 +46,8 @@ class UserPoolHashesController < ApplicationController
     end
   end
 
+  def destroy
+    binding.pry
+  end
+
 end
