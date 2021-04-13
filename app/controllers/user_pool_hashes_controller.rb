@@ -11,7 +11,7 @@ class UserPoolHashesController < ApplicationController
       end
       if @pool_hash
         if user.add_pool_hash(@pool_hash)
-          render json: {user_id: user.id, pool_hash_id: pool_hash.id }, status: :created
+          render json: {user_pool_hash_id: user.user_pool_hashes.last.id }, status: :created
         else
           render json: {error: "Pool #{params[:ticker]} is already followed from #{params[:user_username]}."}, status: :not_acceptable
         end
@@ -27,7 +27,7 @@ class UserPoolHashesController < ApplicationController
   	user = User.find_by({username: params[:user_username]})
   	if user
   		pool_hashes = user.pool_hashes
-  		epoch_stake = EpochStake.find(params[:epoch_stake_id])
+  		epoch_stake = EpochStake.find_by(id: params[:epoch_stake_id])
 
       render json: PoolHashSerializer.new(pool_hashes).to_compared_epoch_stakes(epoch_stake), status: :ok
   	else
@@ -36,6 +36,14 @@ class UserPoolHashesController < ApplicationController
   end
 
   def show
+    user_pool_hash = UserPoolHash.find_by(id: params[:id])
+    pool_hash = user_pool_hash.pool_hash if user_pool_hash
+    epoch_stake = EpochStake.find_by(id: params[:epoch_stake_id])
+    if pool_hash && epoch_stake
+      render json: PoolHashSerializer.new([pool_hash]).to_compared_epoch_stakes(epoch_stake), status: :ok
+    else
+      render status: :not_found
+    end
   end
 
 end

@@ -5,10 +5,11 @@ Rails.application.routes.draw do
   	resources :epoch_stakes, only: [:index]
   	resources :user_stakes, param: :addr_id, only: [:create, :new, :destroy]
     resources :user_pool_hashes, only: [:create, :index]
-  end 
+  end
   resources :epoch_delegations_flows, only: [:index, :show]
   resources :blocks, only: [:show]
   resources :epoch_stakes, only: [:show]
+  resources :user_pool_hashes, only: [:show]
 
   post '/login', to: 'sessions#create'
 	delete '/logout', to: 'sessions#destroy'
