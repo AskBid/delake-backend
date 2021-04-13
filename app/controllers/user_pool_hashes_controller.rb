@@ -10,14 +10,17 @@ class UserPoolHashesController < ApplicationController
         @pool_hash = HashPool.find_by(ticker: params[:ticker]) if params[:ticker].include?('pool1')
       end
       if @pool_hash
-        user.add_pool_hash(@pool_hash)
+        if user.add_pool_hash(@pool_hash)
+          render status: :created
+        else
+          render json: {error: "#{params[:ticker]} is already followed from #{params[:user_username]}."}, status: :not_acceptable
+        end
       else
         render json: {error: "#{params[:ticker]} Pool not found."}, status: :not_found
       end
     else
       render json: {error: "#{current_user} cannot add a pool to #{params[:user_username]}"}, status: :unauthorized
     end
-    binding.pry
   end  
 
   def index
@@ -30,6 +33,9 @@ class UserPoolHashesController < ApplicationController
   	else
       render status: :not_found
     end
+  end
+
+  def show
   end
 
 end
