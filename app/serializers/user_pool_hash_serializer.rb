@@ -1,6 +1,6 @@
 class UserPoolHashSerializer
   def initialize(user_pool_hashes=[])
-  	@user_pool_hashes = pool_hashes
+  	@user_pool_hashes = user_pool_hashes
   end
 
   def to_compared_epoch_stakes(epoch_stake)
