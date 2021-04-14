@@ -46,7 +46,15 @@ class UserPoolHashesController < ApplicationController
   end
 
   def destroy
-    binding.pry
+    user_pool_hash = UserPoolHash.find_by(id: params[:id])
+    if user_pool_hash && user_pool_hash.user.id === current_user.id
+      ticker = user_pool_hash.pool_hash.pool.ticker
+      user_pool_hash.delete
+      render json: "#{ticker} pool has been deleted from your followed pools.", status: :ok
+    else
+      render json: "#{ticker} pool has been deleted from your followed pools.", status: :unauthorized
+    end
   end
 
 end
+
