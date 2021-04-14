@@ -26,10 +26,10 @@ class UserPoolHashesController < ApplicationController
   def index
   	user = User.find_by({username: params[:user_username]})
   	if user
-  		pool_hashes = user.pool_hashes
+  		user_pool_hashes = user.user_pool_hashes
   		epoch_stake = EpochStake.find_by(id: params[:epoch_stake_id])
 
-      render json: PoolHashSerializer.new(pool_hashes).to_compared_epoch_stakes(epoch_stake), status: :ok
+      render json: UserPoolHashSerializer.new(user_pool_hashes).to_compared_epoch_stakes(epoch_stake), status: :ok
   	else
       render status: :not_found
     end
@@ -37,10 +37,9 @@ class UserPoolHashesController < ApplicationController
 
   def show
     user_pool_hash = UserPoolHash.find_by(id: params[:id])
-    pool_hash = user_pool_hash.pool_hash if user_pool_hash
     epoch_stake = EpochStake.find_by(id: params[:epoch_stake_id])
-    if pool_hash && epoch_stake
-      render json: PoolHashSerializer.new([pool_hash]).to_compared_epoch_stakes(epoch_stake), status: :ok
+    if user_pool_hash && epoch_stake
+      render json: UserPoolHashSerializer.new([user_pool_hash]).to_compared_epoch_stakes(epoch_stake), status: :ok
     else
       render status: :not_found
     end
