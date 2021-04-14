@@ -50,9 +50,9 @@ class UserPoolHashesController < ApplicationController
     if user_pool_hash && user_pool_hash.user.id === current_user.id
       ticker = user_pool_hash.pool_hash.pool.ticker
       user_pool_hash.delete
-      render json: "#{ticker} pool has been deleted from your followed pools.", status: :ok
+      render json: {message: "#{ticker} pool has been deleted from your followed pools."}, status: :ok
     else
-      render json: "#{ticker} pool has been deleted from your followed pools.", status: :unauthorized
+      render json: {error: "#{ticker} pool has been deleted from your followed pools."}, status: :unauthorized
     end
   end
 
