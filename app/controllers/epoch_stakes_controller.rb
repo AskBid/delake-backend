@@ -1,19 +1,19 @@
 class EpochStakesController < ApplicationController
 	def index
 		user = User.find_by({username: params[:user_username]}) if params[:user_username]
-		stake_address = StakeAddress.find_by(id: params[:stake_address_view]) if params[:stake_address_view]
+		stake_address = params[:stake_address_view]
+
 		if user
-			addr_ids = user.stake_addresses.ids
-			current_epoch = Block.current_epoch
-			epochs = ((current_epoch-2)..current_epoch)
-			epoch_stakes = EpochStake.where(addr_id: addr_ids).where(epoch_no: epochs)
-			render json: EpochStakeSerializer.new(epoch_stakes).to_live_rewards_json, status: :ok
-		elsif stake_address
-			current_epoch = Block.current_epoch
-			epochs = ((current_epoch-2)..current_epoch)
-			epoch_stakes = stake_address.epoch_stakes.where(epoch_no: epochs)
-			render json: EpochStakeSerializer.new(epoch_stakes).to_live_rewards_json, status: :ok
-		else
+			find_user_epoch_stakes(user)
+		elsif stake_address === 'random'
+			find_epoch_stakes_from_random_address
+		elsif stake_address.include?('stake1')
+			find_epoch_stakes_from_address(stake_address)
+		end
+
+		if @epoch_stakes
+			render json: EpochStakeSerializer.new(@epoch_stakes).to_live_rewards_json, status: :ok
+		else 
 			render status: :not_found
 		end
 	end
@@ -25,5 +25,30 @@ class EpochStakesController < ApplicationController
 		else
 			render status: :not_found
 		end
+	end
+
+	private 
+
+	def find_user_epoch_stakes(user)
+		current_epoch = Block.current_epoch
+		epochs = ((current_epoch-2)..current_epoch)
+		addr_ids = user.stake_addresses.ids
+		@epoch_stakes = EpochStake.where(addr_id: addr_ids).where(epoch_no: epochs)
+	end
+
+	def find_epoch_stakes_from_random_address
+		current_epoch = Block.current_epoch
+		epochs = ((current_epoch-1)..current_epoch)
+		current_epochs_stakes = EpochStake.epoch(current_epoch).where("amount > ?", 100000000000)
+		epoch_stakes_count = current_epochs_stakes.count
+		stake_address = StakeAddress.find(current_epochs_stakes[rand(epoch_stakes_count)].addr_id)
+		@epoch_stakes = stake_address ? stake_address.epoch_stakes.where(epoch_no: epochs) : nil
+	end
+
+	def find_epoch_stakes_from_address(address)
+		current_epoch = Block.current_epoch
+		epochs = ((current_epoch-1)..current_epoch)
+		stake_address = StakeAddress.find_by(view: address)
+		@epoch_stakes = stake_address ? stake_address.epoch_stakes.where(epoch_no: epochs) : nil
 	end
 end
