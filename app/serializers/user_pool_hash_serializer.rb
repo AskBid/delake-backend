@@ -1,13 +1,15 @@
-class PoolHashSerializer
-  def initialize(pool_hashes=[])
-  	@pool_hashes = pool_hashes
+class UserPoolHashSerializer
+  def initialize(user_pool_hashes=[])
+  	@user_pool_hashes = pool_hashes
   end
 
   def to_compared_epoch_stakes(epoch_stake)
-	  @pool_hashes.map do |pool_hash|
+	  @user_pool_hashes.map do |user_pool_hash|
+	  	pool_hash = user_pool_hash.pool_hash
 	    any_pool_epoch_stake = pool_hash.epoch_stakes.epoch(epoch_stake.epoch_no).first
 	    pool = pool_hash.pool
 	    compared_epoch_stake = {
+	    	user_pool_hash_id: user_pool_hash.id,
 	      calc_rewards: epoch_stake.calc_rewards(pool_hash),
 	      amount: epoch_stake.amount,
 	      stake_address: {id: epoch_stake.stake_address.id}
