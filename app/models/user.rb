@@ -10,7 +10,7 @@ class User < ApplicationRecord
 	validates :username, presence: true, uniqueness: true, length: {maximum: 10}
   validates :password, length: {maximum: 12}
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, unless: lambda { self.email.blank? }
-  before_save :downcase_name
+  before_save :downcase_username
 
   def pool_hashes
   	PoolHash.by_user(self)
@@ -34,4 +34,8 @@ class User < ApplicationRecord
  		user_stake = UserStake.find(user_id: self.id, stake_address_id: stake_address.id)
  		user_stake.delete
  	end
+
+  def downcase_username
+    self.username.downcase
+  end
 end
