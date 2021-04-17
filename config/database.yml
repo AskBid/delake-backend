@@ -77,6 +77,4 @@ development:
 #
 production:
   <<: *default
-  database: swan_to_db_sync_backend_production
-  username: swan_to_db_sync_backend
-  password: <%= ENV['SWAN_TO_DB_SYNC_BACKEND_DATABASE_PASSWORD'] %>
+  database: swan_db_sync

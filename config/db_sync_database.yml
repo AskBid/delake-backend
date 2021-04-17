@@ -10,3 +10,7 @@ development:
   password: <%= ENV['HOST_PG_DATABASE_PASSWORD'] %>
   host: <%= ENV['HOST_PG_DATABASE_IP'] %>
   port: '5432'
+
+production:
+  <<: *default
+  database: 'cexplorer'
