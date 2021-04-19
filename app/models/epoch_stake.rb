@@ -16,7 +16,7 @@ class EpochStake < DbSyncRecord
 
 	def calc_rewards(pool_hash = self.pool_hash)
 		# rewards are known for epochs -2 from current epoch, therefore no need of calculation if < -2
-		# if < -2 we just query the rewards taht are already calculated on chain
+		# if < -2 we just query the rewards that are already calculated on chain
 		if epoch_no > (Block.current_epoch - 2)
 			rewards = pool_hash.calc_rewards(self.epoch_no)
 			if rewards
@@ -25,7 +25,7 @@ class EpochStake < DbSyncRecord
 				nil
 			end
 		else
-			pool_hash = self.pool_hash ? self.rewards : self.compare_rewards(pool_hash)
+			pool_hash === self.pool_hash ? self.rewards : self.compare_rewards(pool_hash)
 		end
 	end
 
@@ -42,9 +42,9 @@ class EpochStake < DbSyncRecord
 		pool_param = pool_hash.pool_updates.epoch(epoch_no).latest
 		margin = pool_param[:margin]
 		cost = pool_param[:fixed_cost]
-		whole_rewards = Reward.where(addr_id: pool_hash.addr_id).where(epoch_no: self.epoch_no)
-		rewards = ((whole_rewards - (pool_param[:fixed_cost])) * (1 - pool_param[:margin])) / 1000000
-		((self.amount/1000000) / pool_hash.size(self.epoch_no)).to_f * rewards
+		pool_whole_rewards = pool_hash.rewards.epoch(self.epoch_no).sum(:amount)
+		pool_rewards = ((pool_whole_rewards - (pool_param[:fixed_cost])) * (1 - pool_param[:margin])) / 1000000
+		((self.amount/1000000) / pool_hash.size(self.epoch_no)).to_f * pool_rewards
 	end
 
 	def blocks

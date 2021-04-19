@@ -3,7 +3,7 @@ class PoolsController < ApplicationController
 	end
 
 	def tickers
-		tickers = Pool.all.pluck(:ticker).filter{|t| t.length < 6}
+		tickers = Pool.where.not(ticker: nil).pluck(:ticker)
 		render json: tickers
 	end
 end

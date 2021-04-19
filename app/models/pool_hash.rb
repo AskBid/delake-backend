@@ -35,10 +35,6 @@ class PoolHash < DbSyncRecord
 			.to_i) / 1000000
 	end
 
-	def rewards(epochNo)
-		
-	end
-
 	def calc_rewards(epoch_no = Block.current_epoch, minus_pool_costs = true)
 		# whole is to get all rewards without taking away the Pool costs and margins
 		ep = EpochParam.find_by({epoch_no: epoch_no})
