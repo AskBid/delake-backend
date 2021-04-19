@@ -66,24 +66,31 @@ def get_tickers
 	# 	.joins(:pool_hash)
 	# 	.joins(:pool_meta_data)
 	# 	.map { |pool_update| {pool_hash_id: pool_update.pool_hash_id, pool_addr: pool_update.pool_addr, pool_hash: pool_update.hash_raw, url: pool_update.url, active_epoch_no: pool_update.active_epoch_no} }
-	pool_ids = PoolHash.all.pluck(:view)
+	pool_ids = PoolHash.all.pluck(:view, :id)
 	pool_ids.each do |pool_id|
-		metadata = blockfrost_pool_metadata(pool_id)
-		binding.pry
+		metadata = blockfrost_pool_metadata(pool_id.first)
+		build_pool(metadata, pool_id.first, pool_id.last)
 	end
 end
 
-def build_pool(pool_hash)
+def build_pool(metadata, pool_id, pool_hash_id)
+	# => {"url"=>"https://stakenuts.com/mainnet.json",
+	# "hash"=>"47c0c68cb57f4a5b4a87bad896fc274678e7aea98e200fa14a1cb40c0cab1d8c",
+	# "ticker"=>"NUTS",
+	# "name"=>"StakeNuts",
+	# "description"=>"StakeNuts.com",
+	# "homepage"=>"https://stakenuts.com/"}
 	pool = Pool.new(
-		# t.string "ticker"
-    # t.string "url"
-    # t.integer "pool_hash_id"
-    # t.datetime "created_at", precision: 6, null: false
-    # t.datetime "updated_at", precision: 6, null: false
-    # t.string "hash_hex"
-    # t.string "pool_addr"
+		ticker: metadata['ticker'],
+    url: metadata['url'],
+    pool_hash_id: pool_hash_id,
+    hash_hex: metadata['hash'],
+    pool_addr: pool_id,
+		name: metadata['name'],
+		homepage:  metadata['hompage'],
+		description:  metadata['description']
 	)
-	pool if pool.save
+	pool.save
 end
 
 def blockfrost_pool_metadata(pool_id)
