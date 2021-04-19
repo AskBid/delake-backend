@@ -39,7 +39,7 @@ class PoolHash < DbSyncRecord
 		
 	end
 
-	def calc_rewards(epoch_no = Block.current_epoch, whole = false)
+	def calc_rewards(epoch_no = Block.current_epoch, minus_pool_costs = true)
 		# whole is to get all rewards without taking away the Pool costs and margins
 		ep = EpochParam.find_by({epoch_no: epoch_no})
 		@pool_size = self.size(ep[:epoch_no]) 
@@ -49,7 +49,7 @@ class PoolHash < DbSyncRecord
 		else
 			return nil
 		end
-		if !whole && ep
+		if minus_pool_costs && ep
 			rewards = (rewards - (pool_param[:fixed_cost]/1000000)) * (1 - pool_param[:margin])
 		end
 		if rewards && rewards > 0

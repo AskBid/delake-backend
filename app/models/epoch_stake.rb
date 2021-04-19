@@ -20,14 +20,12 @@ class EpochStake < DbSyncRecord
 		if epoch_no > (Block.current_epoch - 2)
 			rewards = pool_hash.calc_rewards(self.epoch_no)
 			if rewards
-				total_stakes = pool_hash.size(self.epoch_no)
-				puts self.amount/1000000
-				((self.amount/1000000) / total_stakes).to_f * rewards
+				((self.amount/1000000) / pool_hash.size(self.epoch_no)).to_f * rewards
 			else
 				nil
 			end
 		else
-			self.rewards
+			pool_hash = self.pool_hash ? self.rewards : self.compare_rewards(pool_hash)
 		end
 	end
 
@@ -37,6 +35,16 @@ class EpochStake < DbSyncRecord
 			reward = reward.amount.to_f / 1000000
 		end
 		reward
+	end
+
+	def compare_rewards(pool_hash)
+		# used for epochs where rewards are already sent to compare 'would be' delegation to other pool
+		pool_param = pool_hash.pool_updates.epoch(epoch_no).latest
+		margin = pool_param[:margin]
+		cost = pool_param[:fixed_cost]
+		whole_rewards = Reward.where(addr_id: pool_hash.addr_id).where(epoch_no: self.epoch_no)
+		rewards = ((whole_rewards - (pool_param[:fixed_cost])) * (1 - pool_param[:margin])) / 1000000
+		((self.amount/1000000) / pool_hash.size(self.epoch_no)).to_f * rewards
 	end
 
 	def blocks
