@@ -21,7 +21,13 @@ task :func => :environment do
 end
 
 task :get_tickers => :environment do
+	# updates pool that have no ticker
 	get_tickers
+end
+
+task :populate_tickers => :environment do
+	# fetches all pools even if already have a ticker
+	get_tickers(false)
 end
 
 task :write_JSON_EDF => :environment do
@@ -60,16 +66,24 @@ end
 
 
 
-def get_tickers
+def get_tickers(only_if_not_exist = true)
+	# saving the commented code below because coudl be useful in the future I think it finds pool_hahses excluding retired
 	# SELECT pool_hash.*, pool_meta_data.url FROM pool_hash JOIN pool_update ON pool_update.hash_id = pool_hash.id JOIN pool_meta_data ON pool_update.meta_id = pool_meta_data.id;
 	# pool_hashes = PoolUpdate.select("pool_hash.id pool_hash_id, pool_hash.view pool_addr, pool_hash.hash_raw, pool_meta_data.url, pool_update.active_epoch_no")
 	# 	.joins(:pool_hash)
 	# 	.joins(:pool_meta_data)
 	# 	.map { |pool_update| {pool_hash_id: pool_update.pool_hash_id, pool_addr: pool_update.pool_addr, pool_hash: pool_update.hash_raw, url: pool_update.url, active_epoch_no: pool_update.active_epoch_no} }
-	pool_ids = PoolHash.all.pluck(:view, :id)
-	pool_ids.each do |pool_id|
-		metadata = blockfrost_pool_metadata(pool_id.first)
-		build_pool(metadata, pool_id.first, pool_id.last)
+	PoolHash.all.pluck(:view, :id).each do |pool_id|
+		if only_if_not_exist
+			pool = Pool.find_by(pool_hash_id: pool_id.last)
+			existing_ticker = Pool.find_by(pool_hash_id: pool_id.last).ticker if pool
+		end
+		if !existing_ticker
+			metadata = blockfrost_pool_metadata(pool_id.first)
+			build_pool(metadata, pool_id.first, pool_id.last)
+			print metadata['ticker']
+			print  ' :: '
+		end
 	end
 end
 
@@ -87,7 +101,7 @@ def build_pool(metadata, pool_id, pool_hash_id)
     hash_hex: metadata['hash'],
     pool_addr: pool_id,
 		name: metadata['name'],
-		homepage:  metadata['hompage'],
+		homepage:  metadata['homepage'],
 		description:  metadata['description']
 	)
 	pool.save
