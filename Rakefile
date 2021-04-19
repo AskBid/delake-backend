@@ -24,6 +24,10 @@ task :get_tickers => :environment do
 	get_tickers
 end
 
+task :blockfrost => :environment do
+	blockfrost
+end
+
 task :write_JSON_EDF => :environment do
 	ARGV.each { |a| task a.to_sym do ; end }
 	epochs = ARGV.slice(1,ARGV.length)
@@ -188,4 +192,18 @@ def read_pool_url_json(url, hashid)
 		puts '>>>>>>>>>>>>>>>>> failed! ...'
 		read_ticker_from_adapoolsDOTorg(hashid)
 	end
+end
+
+
+
+def blockfrost
+	con = Faraday.new 
+
+	res = con.get do |req| 
+			req.url 'https://cardano-mainnet.blockfrost.io/api/v0/' 
+			req.headers['project_id'] = 'A51ctLxii09vrz3loaadQm7hhgqDJLUx'
+			req.headers['Content-Type'] = 'application/json'
+	end
+	
+	JSON.parse(res.body)
 end
