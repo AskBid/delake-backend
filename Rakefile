@@ -94,10 +94,10 @@ def build_pool(metadata, pool_id, pool_hash_id)
 	# "name"=>"StakeNuts",
 	# "description"=>"StakeNuts.com",
 	# "homepage"=>"https://stakenuts.com/"}
-	pool = Pool.new(
+	pool = Pool.find_or_create_by(pool_hash_id: pool_hash_id)
+	pool.update(
 		ticker: metadata['ticker'],
     url: metadata['url'],
-    pool_hash_id: pool_hash_id,
     hash_hex: metadata['hash'],
     pool_addr: pool_id,
 		name: metadata['name'],
