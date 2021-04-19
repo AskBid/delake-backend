@@ -22,7 +22,12 @@ class EpochStakeSerializer
 				}
 			],
 			only: [:id, :amount, :epoch_no],
-			methods: [:calc_rewards, :blocks, :estimated_blocks]}
+			methods: [
+				:calc_rewards, 
+				:blocks, 
+				:estimated_blocks, 
+				:epoch_info
+			]}
     @epoch_stake.to_json(options)
   end
 end

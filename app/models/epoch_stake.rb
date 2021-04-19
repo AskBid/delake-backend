@@ -14,6 +14,13 @@ class EpochStake < DbSyncRecord
 		self.epoch(epochno).sum("amount")
 	end
 
+	def epoch_info
+		# Block.epoch(257).last.epoch_slot_no
+		# the above could be used to calculate the progress percentage of the epoch
+		# atm is being calcualted from date at the front end
+		{current_epoch: Block.current_epoch}
+	end
+
 	def calc_rewards(pool_hash = self.pool_hash)
 		# rewards are known for epochs -2 from current epoch, therefore no need of calculation if < -2
 		# if < -2 we just query the rewards that are already calculated on chain
