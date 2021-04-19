@@ -24,10 +24,6 @@ task :get_tickers => :environment do
 	get_tickers
 end
 
-task :blockfrost => :environment do
-	blockfrost
-end
-
 task :write_JSON_EDF => :environment do
 	ARGV.each { |a| task a.to_sym do ; end }
 	epochs = ARGV.slice(1,ARGV.length)
@@ -66,29 +62,14 @@ end
 
 def get_tickers
 	# SELECT pool_hash.*, pool_meta_data.url FROM pool_hash JOIN pool_update ON pool_update.hash_id = pool_hash.id JOIN pool_meta_data ON pool_update.meta_id = pool_meta_data.id;
-	pool_hashes = PoolUpdate.select("pool_hash.id pool_hash_id, pool_hash.view pool_addr, pool_hash.hash_raw, pool_meta_data.url, pool_update.active_epoch_no")
-		.joins(:pool_hash)
-		.joins(:pool_meta_data)
-		.map { |pool_update| {pool_hash_id: pool_update.pool_hash_id, pool_addr: pool_update.pool_addr, pool_hash: pool_update.hash_raw, url: pool_update.url, active_epoch_no: pool_update.active_epoch_no} }
-
-	pool_hashes_distinct = {}
-	pool_hashes.each do |data|
-		if !pool_hashes_distinct["#{data[:pool_hash_id]}"]
-			pool_hashes_distinct["#{data[:pool_hash_id]}"] = data
-		elsif pool_hashes_distinct["#{data[:pool_hash_id]}"][:active_epoch_no] < data[:active_epoch_no]
-			pool_hashes_distinct["#{data[:pool_hash_id]}"] = data
-		end
-	end
-
-	pool_hashes_distinct.each do |k, pool_hash|
-		pool = Pool.find_by(pool_addr: pool_hash[:pool_addr])
-		if pool
-			scrape_ticker(pool)
-		else
-			pool = build_pool(pool_hash)
-			scrape_ticker(pool) if pool
-			puts "!!!! #{pool_hash[:pool_addr]} was not built!" if !pool
-		end
+	# pool_hashes = PoolUpdate.select("pool_hash.id pool_hash_id, pool_hash.view pool_addr, pool_hash.hash_raw, pool_meta_data.url, pool_update.active_epoch_no")
+	# 	.joins(:pool_hash)
+	# 	.joins(:pool_meta_data)
+	# 	.map { |pool_update| {pool_hash_id: pool_update.pool_hash_id, pool_addr: pool_update.pool_addr, pool_hash: pool_update.hash_raw, url: pool_update.url, active_epoch_no: pool_update.active_epoch_no} }
+	pool_ids = PoolHash.all.pluck(:view)
+	pool_ids.each do |pool_id|
+		metadata = blockfrost_pool_metadata(pool_id)
+		binding.pry
 	end
 end
 
@@ -145,62 +126,11 @@ end
 
 
 
-def read_ticker_from_adapoolsDOTorg(hashid)
-	#\x158\x06\xDB\xCD\x13M\xDE\xE6\x9A\x8CR\x04\xE3\x8A\xC8\x04H\xF6#B\xF8\xC2<\xFEK~\xDF
-	#153806dbcd134ddee69a8c5204e38ac80448f62342f8c23cfe4b7edf
-	puts '>>>>>>>>>>>>>>>>> INSIDE read_ticker_from_adapoolsDOTorg'
-	begin
-		resp = Net::HTTP.get_response(URI.parse("https://adapools.org/pool/#{hashid}"))
-		puts "visiting https://adapools.org/pool/#{hashid}"
-		data = resp.body
-		res = data.split("data-id=\"#{hashid}\"")[1].split(']')[0].split('[')[1]
-		if res.length > 2 && res.length < 6
-			return res
-		else 
-			if hashid
-				return hashid.slice(0,6)
-			else
-				return nil
-			end
-		end
-	rescue
-		if hashid
-				return hashid.slice(0,6)
-		else
-			return nil
-		end
-	end
-end
-
-
-
-def read_pool_url_json(url, hashid)
-	attempt = 0
-	print '>>>>>>>>>>>>>>>>> INSIDE read_pool_url_json :: '
-	begin
-		puts url
-		uri = URI.parse(url)
-		Net::HTTP.new(uri.hostname, uri.port) do |http|
-		  http.open_timeout = 3000
-		  resp = http.request_get(uri.request_uri)
-		end
-		# resp = Net::HTTP.get_response(URI.parse(url))
-		data = resp.body
-		json = JSON.parse(data)
-		return json['ticker']
-	rescue
-		puts '>>>>>>>>>>>>>>>>> failed! ...'
-		read_ticker_from_adapoolsDOTorg(hashid)
-	end
-end
-
-
-
-def blockfrost
+def blockfrost_pool_metadata(pool_id)
 	con = Faraday.new 
 
 	res = con.get do |req| 
-			req.url 'https://cardano-mainnet.blockfrost.io/api/v0/' 
+			req.url "https://cardano-mainnet.blockfrost.io/api/v0/pools/#{pool_id}/metadata" 
 			req.headers['project_id'] = 'A51ctLxii09vrz3loaadQm7hhgqDJLUx'
 			req.headers['Content-Type'] = 'application/json'
 	end
