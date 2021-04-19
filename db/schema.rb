@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_09_120003) do
+ActiveRecord::Schema.define(version: 2021_04_19_072453) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,9 @@ ActiveRecord::Schema.define(version: 2021_04_09_120003) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "hash_hex"
     t.string "pool_addr"
+    t.string "description"
+    t.string "name"
+    t.string "homepage"
   end
 
   create_table "user_pool_hashes", force: :cascade do |t|

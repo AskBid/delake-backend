@@ -73,65 +73,25 @@ def get_tickers
 	end
 end
 
-
 def build_pool(pool_hash)
 	pool = Pool.new(
-		pool_hash_id: pool_hash[:pool_hash_id],
-		url: pool_hash[:url],
-		hash_hex: PoolHash.bin_to_hex(pool_hash[:pool_hash]),
-		pool_addr: pool_hash[:pool_addr])
+		# t.string "ticker"
+    # t.string "url"
+    # t.integer "pool_hash_id"
+    # t.datetime "created_at", precision: 6, null: false
+    # t.datetime "updated_at", precision: 6, null: false
+    # t.string "hash_hex"
+    # t.string "pool_addr"
+	)
 	pool if pool.save
 end
-
-
-
-def scrape_ticker(pool)
-	if !pool.ticker || pool.ticker.length > 5
-		puts ''
-		begin
-			puts ''
-			puts "----------------- Ticker read in local DB was: #{pool.ticker}"
-
-			if pool.url
-				ticker = read_pool_url_json(pool.url, pool.hash_hex)
-				 
-				if ticker && (ticker.length < 7)
-					pool.ticker = ticker
-					pool.save
-					puts pool.ticker
-				else
-					puts "no valid ticker found: #{ticker}"
-					puts "!!!!! pool.hex: #{pool.hash_hex}"
-				end
-			else
-				if !pool.ticker
-					if pool.hash_hex
-						pool.ticker = pool.hash_hex.slice(0,6)
-						pool.save
-					end
-				else
-					print "``#{pool.ticker}"
-				end
-			end
-		rescue
-			puts "!!!!! no valid ticker found: #{ticker}"
-			puts "!!!!! pool.hex: #{pool.hash_hex}"
-		end
-		puts '----------------------------- Ticker Search END'
-		puts ''
-	else
-		print "``#{pool.ticker}" #ticker already existed and is fine
-	end
-end
-
-
 
 def blockfrost_pool_metadata(pool_id)
 	con = Faraday.new 
 
 	res = con.get do |req| 
 			req.url "https://cardano-mainnet.blockfrost.io/api/v0/pools/#{pool_id}/metadata" 
-			req.headers['project_id'] = 'A51ctLxii09vrz3loaadQm7hhgqDJLUx'
+			req.headers['project_id'] = ENV['BLOCKFROST_PROJECT_ID']
 			req.headers['Content-Type'] = 'application/json'
 	end
 	

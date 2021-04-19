@@ -2,7 +2,7 @@ class UserStakesController < ApplicationController
 
 	def create
 		user = User.find_by({username: params[:user_username]})
-		if user && user.id === current_user.id
+		if user && user === current_user
 			current_epoch = Block.current_epoch
 
 			if params[:stake_address] === ''
