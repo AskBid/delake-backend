@@ -38,7 +38,7 @@ class EpochStakesController < ApplicationController
 
 	def find_epoch_stakes_from_random_address
 		current_epoch = Block.current_epoch
-		epochs = ((current_epoch-1)..current_epoch)
+		epochs = ((current_epoch-2)..current_epoch)
 		current_epochs_stakes = EpochStake.epoch(current_epoch).where("amount > ?", 100000000000)
 		epoch_stakes_count = current_epochs_stakes.count
 		stake_address = StakeAddress.find(current_epochs_stakes[rand(epoch_stakes_count)].addr_id)
@@ -47,7 +47,7 @@ class EpochStakesController < ApplicationController
 
 	def find_epoch_stakes_from_address(address)
 		current_epoch = Block.current_epoch
-		epochs = ((current_epoch-1)..current_epoch)
+		epochs = ((current_epoch-2)..current_epoch)
 		stake_address = StakeAddress.find_by(view: address)
 		@epoch_stakes = stake_address ? stake_address.epoch_stakes.where(epoch_no: epochs) : nil
 	end
