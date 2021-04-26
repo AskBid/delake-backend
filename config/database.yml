@@ -21,9 +21,17 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
+# development:
+#   <<: *default
+#   database: 'swan_db_sync'
+
 development:
   <<: *default
   database: 'swan_db_sync'
+  username: <%= ENV['HOST_PG_DATABASE_USERNAME'] %>
+  password: <%= ENV['HOST_PG_DATABASE_PASSWORD'] %>
+  host: <%= ENV['HOST_PG_DATABASE_IP'] %>
+  port: '5432'
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
