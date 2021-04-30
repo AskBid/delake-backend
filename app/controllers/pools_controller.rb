@@ -1,8 +1,10 @@
 class PoolsController < ApplicationController
 	def index
-		current_epoch = Block.current_epoch
-		epochs = [(current_epoch - 21)..current_epoch]
-		# @blocks = Block.where(epoch_no: epochs)
+		# current_epoch = Block.current_epoch
+		# epochs = [(current_epoch - 21)..current_epoch]
+		epochs = [260]
+		@pool_epochs = PoolEpoch.where(epoch_no: epochs)
+		binding.pry
 		# @epoch_stakes = EpochStake.where(epoch_no: epochs)
 		# @pools = PoolHash.all
 		# render json: {
@@ -10,7 +12,7 @@ class PoolsController < ApplicationController
 		# 	epoch_stakes: EpochStakeSerializer.new(@epoch_stakes).serializable_hash,
 		# 	pools: PoolHashSerializer.new(@pools).serializable_hash
 		# }
-		render json: Block.where(epoch_no: epochs)
+		render json: PoolEpochSerializer.new(@pool_epochs).serializable_hash
 	end
 
 	def tickers

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_30_170627) do
+ActiveRecord::Schema.define(version: 2021_04_30_185135) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,8 +31,8 @@ ActiveRecord::Schema.define(version: 2021_04_30_170627) do
 
   create_table "pool_epoches", force: :cascade do |t|
     t.integer "blocks"
-    t.integer "total_stakes"
-    t.integer "size"
+    t.bigint "total_stakes"
+    t.bigint "size"
     t.integer "pool_hash_id"
     t.integer "pool_id"
     t.datetime "created_at", precision: 6, null: false
