@@ -30,6 +30,12 @@ task :populate_tickers => :environment do
 	get_tickers(false)
 end
 
+task :populate_pool_epochs => :environment do
+	# fetches all pools even if already have a ticker
+	get_tickers(false)
+end
+
+
 task :write_JSON_EDF => :environment do
 	ARGV.each { |a| task a.to_sym do ; end }
 	epochs = ARGV.slice(1,ARGV.length)

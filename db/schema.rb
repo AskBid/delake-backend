@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_19_072453) do
+ActiveRecord::Schema.define(version: 2021_04_30_161850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,16 @@ ActiveRecord::Schema.define(version: 2021_04_19_072453) do
   create_table "epoch_records", force: :cascade do |t|
     t.integer "epoch_no"
     t.bigint "supply"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "pool_epoches", force: :cascade do |t|
+    t.integer "blocks"
+    t.integer "total_stakes"
+    t.integer "size"
+    t.integer "pool_hash_id"
+    t.integer "pool_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
