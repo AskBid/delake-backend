@@ -70,9 +70,15 @@ def populate_pool_epochs(epochNo)
 		puts "pool_epoch for pool_hash #{pool_hash_id} in epoch #{epochNo}."
 		if pool_hash
 			pool_epoch = PoolEpoch.find_or_create_by(epoch_no: epochNo, pool_hash_id: pool_hash_id)
-			pool_epoch.size = pool_hash.size(epochNo)
-			pool_epoch.total_stakes = total_staked
-			pool_epoch.blocks = pool_hash.blocks.epoch(epochNo).count
+			size = pool_hash.size(epochNo)
+			total_stakes = total_staked / 1000000
+			blocks = pool_hash.blocks.epoch(epochNo).count
+			pool_epoch.size = size
+			pool_epoch.total_stakes = total_stakes
+			pool_epoch.blocks = blocks
+			estimated_blocks = (size / total_stakes) * 21600
+			# we calculate the percentage of estimated blocks that we performed better or worse
+			pool_epoch.blocks_delta_pc = (blocks - estimated_blocks) / estimated_blocks
 			pool_epoch.save
 		end
 	end
