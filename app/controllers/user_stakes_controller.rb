@@ -16,7 +16,7 @@ class UserStakesController < ApplicationController
 			if stake_address && user.add_stake_address(stake_address)
 				epochs = ((current_epoch-2)..current_epoch)
 				epoch_stakes = EpochStake.where(addr_id: stake_address.id).where(epoch_no: epochs)
-				render json: EpochStakeSerializer.new(epoch_stakes).to_live_rewards_json, status: :ok 
+				render json: EpochStakeDefaultSerializer.new(epoch_stakes).to_live_rewards_json, status: :ok 
 			else
 				if !stake_address
 					render json: {error: 'The Stake Address entered was not found in the Cardano database'}, status: :not_found

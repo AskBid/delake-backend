@@ -1,4 +1,4 @@
-class EpochStakeSerializer
+class EpochStakeDefaultSerializer
   # include JSONAPI::Serializer
   # attributes :epoch_no, :amount
  	# attributes :stake_address, foreign_key: :addr_id

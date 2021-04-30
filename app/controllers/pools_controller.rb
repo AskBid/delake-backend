@@ -1,5 +1,6 @@
 class PoolsController < ApplicationController
 	def index
+		
 	end
 
 	def tickers
