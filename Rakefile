@@ -67,6 +67,7 @@ def populate_pool_epochs(epochNo)
 	block_producing_pool_hash_ids = Block.where(epoch_no: 261).joins(:slot_leader).pluck(:pool_hash_id).uniq
 	block_producing_pool_hash_ids.each do |pool_hash_id|
 		pool_hash = PoolHash.find_by(id: pool_hash_id)
+		puts "pool_epoch for pool_hash #{pool_hash_id} in epoch #{epochNo}."
 		if pool_hash
 			pool_epoch = PoolEpoch.find_or_create_by(epoch_no: epochNo, pool_hash_id: pool_hash_id)
 			pool_epoch.size = pool_hash.size(epochNo)
