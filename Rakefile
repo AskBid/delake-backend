@@ -73,7 +73,7 @@ def populate_pool_epochs(epochNo)
 			pool_epoch.size = pool_hash.size(epochNo)
 			pool_epoch.total_stakes = total_staked
 			pool_epoch.blocks = pool_hash.blocks.epoch(epochNo).count
-			pool_epoch.update
+			pool_epoch.save
 		end
 	end
 	# "blocks""total_stakes""size""pool_hash_id""pool_id""epoch_no""ticker"
