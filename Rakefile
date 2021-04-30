@@ -63,7 +63,7 @@ end
 
 
 def populate_pool_epochs(epochNo)
-	total_staked = EpochStake.total_stakes(epochNo)
+	total_staked = EpochStake.total_staked(epochNo)
 	block_producing_pool_hash_ids = Block.where(epoch_no: 261).joins(:slot_leader).pluck(:pool_hash_id).uniq
 	block_producing_pool_hash_ids.each do |pool_hash_id|
 		pool_hash = PoolHash.find_by(id: pool_hash_id)
@@ -71,7 +71,7 @@ def populate_pool_epochs(epochNo)
 		if pool_hash
 			pool_epoch = PoolEpoch.find_or_create_by(epoch_no: epochNo, pool_hash_id: pool_hash_id)
 			pool_epoch.size = pool_hash.size(epochNo)
-			pool_epoch.total_staked = total_staked
+			pool_epoch.total_stakes = total_staked
 			pool_epoch.blocks = pool_hash.blocks.epoch(epochNo).count
 			pool_epoch.update
 		end
