@@ -13,6 +13,7 @@ class PoolHash < DbSyncRecord
 	has_many :slot_leader
 	has_many :blocks, through: :slot_leader
 	has_many :user_pool_hashes
+	has_many :pool_epoch
 	# has_many :users, through: :user_pool_hashes
 
 	# can't use because hash_raw ingored to be working with serializers
