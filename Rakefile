@@ -69,7 +69,7 @@ def populate_pool_epochs(epochNo)
 		pool_hash = PoolHash.find_by(id: pool_hash_id)
 		if pool_hash
 			pool_epoch = PoolEpoch.find_or_create_by(epoch_no: epochNo, pool_hash_id: pool_hash_id)
-			pool_epoch.size = pool_hash.size
+			pool_epoch.size = pool_hash.size(epochNo)
 			pool_epoch.total_staked = total_staked
 			pool_epoch.blocks = pool_hash.blocks.epoch(epochNo).count
 			pool_epoch.update
