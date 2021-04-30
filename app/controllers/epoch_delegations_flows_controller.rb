@@ -1,8 +1,13 @@
 class EpochDelegationsFlowsController < ApplicationController
 
 	def show
-		edf_json = JSON.parse(EpochDelegationsFlow.first.json)
-		render json: edf_json
+		dele_flow = EpochDelegationsFlow.find_by(epochno: params[:id])
+		if dele_flow
+			edf_json = JSON.parse(dele_flow.json)
+			render json: edf_json, status: :ok
+		else
+			render status: :not_found
+		end
 	end
 
 	def index
