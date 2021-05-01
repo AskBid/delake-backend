@@ -18,4 +18,10 @@ class StakeAddress < DbSyncRecord
 	def self.by_user(user)
 		StakeAddress.where(id:  user.user_stakes.pluck(:stake_address_id))
 	end
+
+	def self.by_addr1(addr1)
+		stdout_str, error_str, status = Open3.capture3('node', 
+			'/Users/sergio/Documents/github/cardano-serialisation-script/convertAddr1toStake1.js', addr1)
+		stdout_str.slice(0,stdout_str.length-1)
+	end
 end
