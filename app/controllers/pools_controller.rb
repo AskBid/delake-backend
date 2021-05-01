@@ -10,7 +10,7 @@ class PoolsController < ApplicationController
 
 		render json: {
 			pool_epochs: @pool_epochs.as_json(only: [:epoch_no, :pool_hash_id, :blocks_delta_pc]),
-			pools: @pools.as_json(only: [:ticker, :pool_hash_id, :hash_hex])
+			pools: @pools.as_json(only: [:ticker, :pool_hash_id, :hash_hex, :pool_addr])
 		}
 	end
 
