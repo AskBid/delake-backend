@@ -1,6 +1,6 @@
 class BlockSerializer
   include JSONAPI::Serializer
-  attributes :epoch_no, :slot_leader_id
+  attributes :time, :epoch_no, :slot_no, :block_no, :epoch_slot_no
   # has_many :epoch_stakes
 end
 # Block 
