@@ -28,6 +28,6 @@ class EpochStakeDefaultSerializer
 				:estimated_blocks, 
 				:epoch_info
 			]}
-    @epoch_stake.to_json(options)
+    @epoch_stake.as_json(options)
   end
 end

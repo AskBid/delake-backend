@@ -8,6 +8,6 @@ class BlocksController < ApplicationController
   end
 
   def last_update
-  	render json: {block: Block.last.as_json(only: [:time, :epoch_no, :slot_no, :block_no, :epoch_slot_no])}
+  	render json: Block.last.as_json(only: [:time, :epoch_no, :slot_no, :block_no, :epoch_slot_no])
   end
 end

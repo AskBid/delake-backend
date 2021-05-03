@@ -8,7 +8,7 @@ class BlockSerializer
 
   def to_json
   	options = {only: [:time, :epoch_no, :slot_no, :block_no, :epoch_slot_no]}
-  	@block.to_json(options)
+  	@block.as_json(options)
   end
 end
 # Block 

@@ -4,7 +4,6 @@ class EpochStakesController < ApplicationController
 		stake_address = params[:stake_address_view]
 		@current_epoch = Block.last
 		epochs = ((@current_epoch.epoch_no-2)..@current_epoch.epoch_no)
-
 		if user
 			user_epoch_stakes(user, epochs)
 		elsif !stake_address && !params[:user_username]
