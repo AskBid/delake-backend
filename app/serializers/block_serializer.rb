@@ -1,7 +1,15 @@
 class BlockSerializer
-  include JSONAPI::Serializer
-  attributes :time, :epoch_no, :slot_no, :block_no, :epoch_slot_no
+  # include JSONAPI::Serializer
+  # attributes :time, :epoch_no, :slot_no, :block_no, :epoch_slot_no
   # has_many :epoch_stakes
+  def initialize(block)
+    @block = block
+  end
+
+  def to_json
+  	options = {only: [:time, :epoch_no, :slot_no, :block_no, :epoch_slot_no]}
+  	@block.to_json(options)
+  end
 end
 # Block 
 # id: 4748306, 

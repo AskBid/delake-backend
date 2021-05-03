@@ -16,7 +16,7 @@ class EpochStakesController < ApplicationController
 		if @epoch_stakes
 			render json: {
 				epoch_stakes: EpochStakeDefaultSerializer.new(@epoch_stakes).to_live_rewards_json,
-				last_update: BlockSerializer.new(@current_epoch).serializable_hash
+				last_update: BlockSerializer.new(@current_epoch).to_json
 			}, status: :ok
 		else 
 			render status: :not_found
