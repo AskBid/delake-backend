@@ -28,6 +28,7 @@ class User < ApplicationRecord
  	def add_stake_address(stake_address)
  		user_stake = UserStake.new(user_id: self.id, stake_address_id: stake_address.id)
  		user_stake.save
+    #returns false if stake address was already associated with user
  	end
 
  	def delete_stake_address(stake_address)

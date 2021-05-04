@@ -10,7 +10,7 @@ class EpochStakesController < ApplicationController
 		elsif !stake_address && !params[:user_username]
 			epoch_stakes_from_random_address(epochs)
 		else # if stake_address.include?('stake1') || stake_address.include?('addr1')
-			epoch_stakes_from_address(stake_address, epochs)
+			epoch_stakes_from_addresses(stake_address, epochs)
 		end
 
 		if @epoch_stakes
@@ -45,7 +45,7 @@ class EpochStakesController < ApplicationController
 		@epoch_stakes = stake_address ? stake_address.epoch_stakes.where(epoch_no: epochs) : nil
 	end
 
-	def epoch_stakes_from_address(address, epochs)
+	def epoch_stakes_from_addresses(address, epochs)
 		stake_address = StakeAddress.find_by_any_addr(address)
 		@epoch_stakes = stake_address ? stake_address.epoch_stakes.where(epoch_no: epochs) : nil
 	end

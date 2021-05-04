@@ -2,7 +2,9 @@ class UserStakesController < ApplicationController
 
 	def create
 		user = User.find_by({username: params[:user_username]})
-		if user && user === current_user
+		authenticated = user === current_user
+		#find address if user is authenticated or if is an unregistered request
+		if authenticated
 			current_epoch = Block.current_epoch
 			if params[:stake_address] === ''
 				current_epochs_stakes = EpochStake.epoch(current_epoch).where("amount > ?", 100000000000)
@@ -10,20 +12,21 @@ class UserStakesController < ApplicationController
 			else # if params[:stake_address].include?('stake1') || 'addr1'
 				stake_address = StakeAddress.find_by_any_addr(params[:stake_address])
 			end
-
-			if stake_address && user.add_stake_address(stake_address)
-				epochs = ((current_epoch-2)..current_epoch)
-				epoch_stakes = EpochStake.where(addr_id: stake_address.id).where(epoch_no: epochs)
-				render json: EpochStakeDefaultSerializer.new(epoch_stakes).to_live_rewards_json, status: :ok 
-			else
-				if !stake_address
-					render json: {error: 'The Stake Address entered was not found in the Cardano database'}, status: :not_found
-				else
-					render json: {error: "That Stake Address is already associated with #{params[:user_username]}."}, status: :conflict
-				end
+		end
+		#get epoch_stake if stake_address was found
+		if stake_address
+			addr_added = user.add_stake_address(stake_address) if user && authenticated
+			epochs = ((current_epoch-2)..current_epoch)
+			@epoch_stakes = EpochStake.where(addr_id: stake_address.id).where(epoch_no: epochs)
+			render json: EpochStakeDefaultSerializer.new(epoch_stakes).to_live_rewards_json, status: :ok
+		else #possible errors:
+			if !authenticated
+				render json: {error: "You are not logged in as #{params[:user_username]}"}, status: :unauthorized
+			elsif !addr_added
+				render json: {error: "That Stake Address is already associated with #{params[:user_username]}."}, status: :conflict
+			elsif !stake_address
+				render json: {error: 'The Stake Address entered was not found in the Cardano database'}, status: :not_found
 			end
-		else
-			render json: {error: "You are not logged in as #{params[:user_username]}"}, status: :unauthorized
 		end
 	end
 

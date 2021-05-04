@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   end
 
   resources :user_pool_hashes, only: [:show, :destroy]
+  resources :user_stakes, param: :addr_id, only: [:create]
 
   post '/login', to: 'sessions#create'
 	delete '/logout', to: 'sessions#destroy'
