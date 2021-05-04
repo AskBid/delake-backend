@@ -2,7 +2,6 @@ class EpochStakesController < ApplicationController
 	def index
 		user = User.find_by({username: params[:user_username]}) if params[:user_username]
 		stake_address = params[:stake_address_view]
-		binding.pry
 		@current_epoch = Block.last
 		epochs = ((@current_epoch.epoch_no-2)..@current_epoch.epoch_no)
 

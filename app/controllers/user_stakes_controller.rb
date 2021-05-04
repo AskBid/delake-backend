@@ -4,7 +4,6 @@ class UserStakesController < ApplicationController
 		user = User.find_by({username: params[:user_username]})
 		if user && user === current_user
 			current_epoch = Block.current_epoch
-
 			if params[:stake_address] === ''
 				current_epochs_stakes = EpochStake.epoch(current_epoch).where("amount > ?", 100000000000)
 				stake_address = StakeAddress.find(current_epochs_stakes[rand(current_epochs_stakes.count)].addr_id)
