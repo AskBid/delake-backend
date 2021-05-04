@@ -2,13 +2,15 @@ class EpochStakesController < ApplicationController
 	def index
 		user = User.find_by({username: params[:user_username]}) if params[:user_username]
 		stake_address = params[:stake_address_view]
+		binding.pry
 		@current_epoch = Block.last
 		epochs = ((@current_epoch.epoch_no-2)..@current_epoch.epoch_no)
+
 		if user
 			user_epoch_stakes(user, epochs)
 		elsif !stake_address && !params[:user_username]
 			epoch_stakes_from_random_address(epochs)
-		elsif stake_address.include?('stake1')
+		else # if stake_address.include?('stake1') || stake_address.include?('addr1')
 			epoch_stakes_from_address(stake_address, epochs)
 		end
 
@@ -45,7 +47,7 @@ class EpochStakesController < ApplicationController
 	end
 
 	def epoch_stakes_from_address(address, epochs)
-		stake_address = StakeAddress.find_by(view: address)
+		stake_address = StakeAddress.find_by_any_addr(address)
 		@epoch_stakes = stake_address ? stake_address.epoch_stakes.where(epoch_no: epochs) : nil
 	end
 end

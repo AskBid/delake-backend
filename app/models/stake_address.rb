@@ -19,9 +19,14 @@ class StakeAddress < DbSyncRecord
 		StakeAddress.where(id:  user.user_stakes.pluck(:stake_address_id))
 	end
 
-	def self.by_addr1(addr1)
-		stdout_str, error_str, status = Open3.capture3('node', ENV['SCRIPT_ADDR1_TO_STAKE1_LOCATION'], addr1)
-		stake1 = stdout_str.slice(0,stdout_str.length-1)
-		StakeAddress.find_by(view: stake1)
+	def self.find_by_any_addr(addr)
+		binding.pry
+		if addr.include?('addr1')
+			stdout_str, error_str, status = Open3.capture3('node', ENV['SCRIPT_ADDR1_TO_STAKE1_LOCATION'], addr)
+			stake1 = stdout_str.slice(0,stdout_str.length-1)
+			StakeAddress.find_by(view: stake1)
+		else
+			StakeAddress.find_by(view: addr)
+		end
 	end
 end

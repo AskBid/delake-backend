@@ -7,10 +7,9 @@ class UserStakesController < ApplicationController
 
 			if params[:stake_address] === ''
 				current_epochs_stakes = EpochStake.epoch(current_epoch).where("amount > ?", 100000000000)
-				es_count = current_epochs_stakes.count
-				stake_address = StakeAddress.find(current_epochs_stakes[rand(es_count)].addr_id)
-			else
-				stake_address = StakeAddress.find_by(view: params[:stake_address])
+				stake_address = StakeAddress.find(current_epochs_stakes[rand(current_epochs_stakes.count)].addr_id)
+			else # if params[:stake_address].include?('stake1') || 'addr1'
+				stake_address = StakeAddress.find_by_any_addr(params[:stake_address])
 			end
 
 			if stake_address && user.add_stake_address(stake_address)
