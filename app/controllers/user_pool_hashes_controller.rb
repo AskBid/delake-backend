@@ -19,7 +19,7 @@ class UserPoolHashesController < ApplicationController
           render json: {error: "Pool #{params[:ticker]} is already followed from #{params[:user_username]}."}, status: :not_acceptable
         end
       else
-        render json: {error: "#{params[:ticker]} Pool not found."}, status: :not_found
+        render json: {error: "#{params[:ticker]} Pool not found. Try a different Pool/ticker."}, status: :not_found
       end
     else
       render json: {error: "#{current_user} cannot add a pool to #{params[:user_username]}"}, status: :unauthorized

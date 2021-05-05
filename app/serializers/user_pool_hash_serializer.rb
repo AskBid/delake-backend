@@ -9,6 +9,7 @@ class UserPoolHashSerializer
 	    any_pool_epoch_stake = pool_hash.epoch_stakes.epoch(epoch_stake.epoch_no).first
 	    pool = pool_hash.pool
 	    compared_epoch_stake = {
+	    	id: epoch_stake.id,
 	    	user_pool_hash_id: user_pool_hash.id,
 	      calc_rewards: epoch_stake.calc_rewards(pool_hash),
 	      amount: epoch_stake.amount,
