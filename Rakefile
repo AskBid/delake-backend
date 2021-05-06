@@ -61,6 +61,16 @@ def epoch_flow(epochNo)
 	puts "Epoch Delegation Flow hash built"
 end
 
+def epoch_flow_date_check(epochNo)
+	require 'date'
+	daysDelta = (DateTime.new(2020,8,13,21,44)..DateTime.now).count % 5
+	if daysDelta === 1
+		epoch_flow(epochNo)
+	else 
+		puts 'cannot run today as it is not first day of a new epoch'
+	end
+end
+
 
 def populate_pool_epochs(epochNo)
 	total_staked = EpochStake.total_staked(epochNo)
