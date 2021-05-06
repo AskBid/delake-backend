@@ -27,14 +27,18 @@ class UserPoolHashesController < ApplicationController
   end  
 
   def index
+    binding.pry
   	user = User.find_by({username: params[:user_username]})
+  	@epoch_stake = EpochStake.find_by(id: params[:epoch_stake_id])
   	if user
-  		@user_pool_hashes = user.user_pool_hashes
-  		@epoch_stake = EpochStake.find_by(id: params[:epoch_stake_id])
-
-      render json: UserPoolHashSerializer.new(@user_pool_hashes).to_compared_epoch_stakes(@epoch_stake), status: :ok
-  	else
-      render status: :not_found
+  		@pool_hashes = user.pool_hashes
+  	elsif params[:pool_hash_ids]
+      @pool_hashes = PoolHash.where(id: params[:pool_hash_ids].split(','))
+    end
+    if @pool_hashes
+      render json: ComparedEpochStakeFromPoolHashSerializer.new(@pool_hashes).to_compared_epoch_stakes(@epoch_stake), status: :ok
+    else 
+      render json: EpochStakeDefaultSerializer.new(@epoch_stake).to_live_rewards_json, status: :ok
     end
   end
 

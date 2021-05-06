@@ -1,20 +1,20 @@
-class UserPoolHashSerializer
-  def initialize(user_pool_hashes=[])
-  	@user_pool_hashes = user_pool_hashes
+class ComparedEpochStakeFromPoolHashSerializer
+  def initialize(pool_hashes=[])
+  	@pool_hashes = pool_hashes
   end
 
   def to_compared_epoch_stakes(epoch_stake)
-	  @user_pool_hashes.map do |user_pool_hash|
-	  	pool_hash = user_pool_hash.pool_hash
+	  @pool_hashes.map do |pool_hash|
+	  	#to check if there is any delegation
 	    any_pool_epoch_stake = pool_hash.epoch_stakes.epoch(epoch_stake.epoch_no).first
 	    pool = pool_hash.pool
 	    compared_epoch_stake = {
 	    	id: epoch_stake.id,
-	    	user_pool_hash_id: user_pool_hash.id,
 	      calc_rewards: epoch_stake.calc_rewards(pool_hash),
 	      amount: epoch_stake.amount,
 	      stake_address: {id: epoch_stake.stake_address.id},
-	      epoch_no: epoch_stake.epoch_no
+	      epoch_no: epoch_stake.epoch_no,
+	      epoch_stake: EpochStakeDefaultSerializer.new(epoch_stake)
 	    }
 	    if any_pool_epoch_stake
 	      compared_epoch_stake[:blocks] = any_pool_epoch_stake.blocks

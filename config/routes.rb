@@ -16,7 +16,7 @@ Rails.application.routes.draw do
     resources :epoch_stakes, only: [:index]
   end
 
-  resources :user_pool_hashes, only: [:show, :destroy, :create]
+  resources :user_pool_hashes, only: [:destroy, :create, :index]
   resources :user_stakes, param: :addr_id, only: [:create]
 
   post '/login', to: 'sessions#create'
