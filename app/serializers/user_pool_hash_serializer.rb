@@ -13,7 +13,6 @@ class UserPoolHashSerializer
 	      calc_rewards: epoch_stake.calc_rewards(pool_hash),
 	      amount: epoch_stake.amount,
 	      stake_address: {id: epoch_stake.stake_address.id},
-	      user_pool_hash_id: user_pool_hash.id,
 	      epoch_no: epoch_stake.epoch_no
 	    }
 	    if any_pool_epoch_stake

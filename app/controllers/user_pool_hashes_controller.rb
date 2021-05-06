@@ -42,7 +42,8 @@ class UserPoolHashesController < ApplicationController
   end
 
   def destroy
-    user_pool_hash = UserPoolHash.find_by(id: params[:id])
+    user = User.find_by(username: params[:user_username])
+    user_pool_hash = UserPoolHash.find_by(user_id: user.id, pool_hash_id: params[:pool_hash_id]) if user
     if user_pool_hash && user_pool_hash.user.id === current_user.id
       ticker = user_pool_hash.pool_hash.pool.ticker
       user_pool_hash.delete
