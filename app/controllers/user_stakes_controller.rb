@@ -17,7 +17,7 @@ class UserStakesController < ApplicationController
 		if stake_address
 			addr_added = user.add_stake_address(stake_address) if user && authenticated
 			epochs = ((current_epoch-2)..current_epoch)
-			@epoch_stakes = EpochStake.where(addr_id: stake_address.id).where(epoch_no: epochs) 
+			@epoch_stakes = EpochStake.where(addr_id: stake_address.id).where(epoch_no: epochs)
 			render json: EpochStakeDefaultSerializer.new(@epoch_stakes).to_live_rewards_json, status: :ok
 		else #possible errors:
 			if !authenticated

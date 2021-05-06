@@ -38,16 +38,6 @@ class UserPoolHashesController < ApplicationController
     end
   end
 
-  def show
-    user_pool_hash = UserPoolHash.find_by(id: params[:id])
-    epoch_stake = EpochStake.find_by(id: params[:epoch_stake_id])
-    if user_pool_hash && epoch_stake
-      render json: UserPoolHashSerializer.new([user_pool_hash]).to_compared_epoch_stakes(epoch_stake), status: :ok
-    else
-      render status: :not_found
-    end
-  end
-
   def destroy
     user_pool_hash = UserPoolHash.find_by(id: params[:id])
     if user_pool_hash && user_pool_hash.user.id === current_user.id
