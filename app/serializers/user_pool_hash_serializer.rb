@@ -1,4 +1,4 @@
-class ComparedEpochStakeFromPoolHashSerializer
+class UserPoolHashSerializer
   def initialize(pool_hashes=[])
   	@pool_hashes = pool_hashes
   end
@@ -13,8 +13,7 @@ class ComparedEpochStakeFromPoolHashSerializer
 	      calc_rewards: epoch_stake.calc_rewards(pool_hash),
 	      amount: epoch_stake.amount,
 	      stake_address: {id: epoch_stake.stake_address.id},
-	      epoch_no: epoch_stake.epoch_no,
-	      epoch_stake: EpochStakeDefaultSerializer.new(epoch_stake)
+	      epoch_no: epoch_stake.epoch_no
 	    }
 	    if any_pool_epoch_stake
 	      compared_epoch_stake[:blocks] = any_pool_epoch_stake.blocks
