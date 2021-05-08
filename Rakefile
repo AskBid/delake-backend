@@ -87,13 +87,12 @@ def populate_pool_epochs(epochNo, number_for_avg_performance = 20)
 			pool_epoch.size = size
 			pool_epoch.total_stakes = total_stakes
 			pool_epoch.blocks = blocks
-			estimated_blocks = (size / total_stakes) * 21600
+			estimated_blocks = (size.to_f / total_stakes.to_f) * 21600
 			# we calculate the percentage of estimated blocks that we performed better or worse
 			pool_epoch.blocks_delta_pc = (blocks - estimated_blocks) / estimated_blocks
 			pool_epoch.save
 			# calculate performance below here
-			pool_epochs = PoolEpoch.where(pool_hash_id: pool_hash.id)
-				.where(epoch_no: [(epochNo.to_i-number_for_avg_performance)..epochNo.to_i])
+			pool_epochs = PoolEpoch.where(pool_hash_id: pool_hash.id).where(epoch_no: [(epochNo.to_i-number_for_avg_performance)..epochNo.to_i])
 			pool_epoch.performance = pool_epochs.sum(:blocks_delta_pc) / pool_epochs.count
 			if pool_hash.pool
 				pool = pool_hash.pool
@@ -103,6 +102,7 @@ def populate_pool_epochs(epochNo, number_for_avg_performance = 20)
 			pool.performance = pool_epoch.performance
 			pool_epoch.save
 			pool.save #need to? superfluous?
+			# binding.pry
 		end
 	end
 	# "blocks""total_stakes""size""pool_hash_id""pool_id""epoch_no""ticker"
