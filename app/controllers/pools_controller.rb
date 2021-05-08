@@ -2,12 +2,12 @@ class PoolsController < ApplicationController
 	def index
 		current_epoch = Block.current_epoch
 		epochs = [(current_epoch-20)..(current_epoch-1)]
-		pool_hash_ids = Pool.where('avg_size > 800000')
+		pool_hash_ids = Pool.where('last_xepochs_blocks > ?', 20*1.5)
 			.where.not(performance: nil)
 			.order(performance: :desc)
-			.limit(250)
+			.limit(100)
 			.pluck(:pool_hash_id)
-		# binding.pry
+		binding.pry
 		@pool_epochs = PoolEpoch.where(pool_hash_id: pool_hash_ids).where(epoch_no: epochs)
 		# pool_hash_ids = @pool_epochs.pluck(:pool_hash_id).uniq
 		@pools = Pool.where(pool_hash_id: pool_hash_ids)
