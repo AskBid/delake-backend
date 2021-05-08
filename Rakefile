@@ -76,6 +76,7 @@ end
 def populate_pool_epochs(epochNo, number_for_avg = 20)
 	total_staked = EpochStake.total_staked(epochNo)
 	block_producing_pool_hash_ids = Block.where(epoch_no: epochNo).joins(:slot_leader).pluck(:pool_hash_id).uniq
+	epochs = 
 	block_producing_pool_hash_ids.each do |pool_hash_id|
 		pool_hash = PoolHash.find_by(id: pool_hash_id)
 		puts "pool_epoch for pool_hash #{pool_hash_id} in epoch #{epochNo}."
@@ -92,7 +93,7 @@ def populate_pool_epochs(epochNo, number_for_avg = 20)
 			pool_epoch.blocks_delta_pc = (blocks - estimated_blocks) / estimated_blocks.to_f
 			pool_epoch.save
 			# calculate performance below here
-			pool_epochs = PoolEpoch.where(pool_hash_id: pool_hash.id).where(epoch_no: [(epochNo.to_i-number_for_avg)..epochNo.to_i])
+			pool_epochs = PoolEpoch.where(pool_hash_id: pool_hash.id).where(epoch_no: epochs)
 			pool_epoch.performance = pool_epochs.sum(:blocks_delta_pc).to_f / number_for_avg
 			pool_epoch.avg_size = pool_epochs.sum(:size).to_f / number_for_avg
 			pool_epoch.avg_blocks = pool_epochs.sum(:blocks).to_f / number_for_avg
@@ -105,6 +106,7 @@ def populate_pool_epochs(epochNo, number_for_avg = 20)
 			pool.avg_size = pool_epoch.avg_size
 			pool.avg_blocks = pool_epoch.avg_blocks
 			pool_epoch.save
+			pool.last_xepochs_blocks = pool_hash.blocks.where(epoch_no: epochs).pluck(:epoch_no).uniq.count
 			pool.save #need to? superfluous?
 			
 		end
