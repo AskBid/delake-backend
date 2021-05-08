@@ -1,9 +1,8 @@
 class PoolsController < ApplicationController
 	def index
-		# current_epoch = Block.current_epoch
-		current_epoch = 261
-		epochs = [(current_epoch-2)..(current_epoch-1)]
-		binding.pry
+		current_epoch = Block.current_epoch
+		epochs = [(current_epoch-6)..(current_epoch-1)]
+		# binding.pry
 		@pool_epochs = PoolEpoch.where(epoch_no: epochs)
 			.where("size > 1000000")
 			# .where("blocks < 21600")
