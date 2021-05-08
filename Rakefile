@@ -94,6 +94,7 @@ def populate_pool_epochs(epochNo, number_for_avg_performance = 20)
 			# calculate performance below here
 			pool_epochs = PoolEpoch.where(pool_hash_id: pool_hash.id).where(epoch_no: [(epochNo.to_i-number_for_avg_performance)..epochNo.to_i])
 			pool_epoch.performance = pool_epochs.sum(:blocks_delta_pc).to_f / pool_epochs.count
+			binding.pry if pool_epoch.performance>1
 			if pool_hash.pool
 				pool = pool_hash.pool
 			else 
@@ -102,7 +103,7 @@ def populate_pool_epochs(epochNo, number_for_avg_performance = 20)
 			pool.performance = pool_epoch.performance
 			pool_epoch.save
 			pool.save #need to? superfluous?
-			# binding.pry
+			
 		end
 	end
 	# "blocks""total_stakes""size""pool_hash_id""pool_id""epoch_no""ticker"
