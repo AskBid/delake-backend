@@ -106,7 +106,7 @@ def populate_pool_epochs(epochNo, number_for_avg = 20)
 			pool.avg_size = pool_epoch.avg_size
 			pool.avg_blocks = pool_epoch.avg_blocks
 			pool_epoch.save
-			pool.last_xepochs_blocks = pool_hash.blocks.where(epoch_no: epochs).pluck(:epoch_no).count
+			pool.producing_epochs = pool_hash.blocks.where(epoch_no: epochs).pluck(:epoch_no).uniq.count
 			pool.save #need to? superfluous?
 			
 		end

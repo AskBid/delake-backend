@@ -2,7 +2,7 @@ class PoolsController < ApplicationController
 	def index
 		current_epoch = Block.current_epoch
 		epochs = [(current_epoch-20)..(current_epoch-1)]
-		pool_hash_ids = Pool.where('last_xepochs_blocks > ?', 20*1.5)
+		pool_hash_ids = Pool.where('producing_epochs > ?', 20*1.5)
 			.where.not(performance: nil)
 			.order(performance: :desc)
 			.limit(100)
