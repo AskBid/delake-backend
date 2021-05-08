@@ -89,11 +89,11 @@ def populate_pool_epochs(epochNo, number_for_avg_performance = 20)
 			pool_epoch.blocks = blocks
 			estimated_blocks = (size.to_f / total_stakes.to_f) * 21600
 			# we calculate the percentage of estimated blocks that we performed better or worse
-			pool_epoch.blocks_delta_pc = (blocks - estimated_blocks) / estimated_blocks
+			pool_epoch.blocks_delta_pc = (blocks - estimated_blocks) / estimated_blocks.to_f
 			pool_epoch.save
 			# calculate performance below here
 			pool_epochs = PoolEpoch.where(pool_hash_id: pool_hash.id).where(epoch_no: [(epochNo.to_i-number_for_avg_performance)..epochNo.to_i])
-			pool_epoch.performance = pool_epochs.sum(:blocks_delta_pc) / pool_epochs.count
+			pool_epoch.performance = pool_epochs.sum(:blocks_delta_pc).to_f / pool_epochs.count
 			if pool_hash.pool
 				pool = pool_hash.pool
 			else 
