@@ -1,5 +1,5 @@
-class AddPerformanceToPoolEpochs < ActiveRecord::Migration[6.1]
+class AddPerformanceToPoolEpoches < ActiveRecord::Migration[6.1]
   def change
-    add_column :pool_epochs, :performance, :integer
+    add_column :pool_epoches, :performance, :integer
   end
 end
