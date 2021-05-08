@@ -103,7 +103,6 @@ def populate_pool_epochs(epochNo, number_for_avg_performance = 20)
 			pool.performance = pool_epoch.performance
 			pool_epoch.save
 			pool.save #need to? superfluous?
-			binding.pry
 		end
 	end
 	# "blocks""total_stakes""size""pool_hash_id""pool_id""epoch_no""ticker"
