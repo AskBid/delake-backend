@@ -61,18 +61,19 @@ def epoch_flow(epochNo)
 	puts "Epoch Delegation Flow hash built"
 end
 
-def epoch_flow_date_check(epochNo)
+def epochFlow_poolEpochs_dateCheck(epochNo)
 	require 'date'
 	daysDelta = (DateTime.new(2020,8,13,21,44)..DateTime.now).count % 5
 	if daysDelta === 1
 		epoch_flow(epochNo)
+		populate_pool_epochs(epochNo -= 1)
 	else 
 		puts 'cannot run today as it is not first day of a new epoch'
 	end
 end
 
 
-def populate_pool_epochs(epochNo)
+def populate_pool_epochs(epochNo, number_for_avg_performance = 20)
 	total_staked = EpochStake.total_staked(epochNo)
 	block_producing_pool_hash_ids = Block.where(epoch_no: epochNo).joins(:slot_leader).pluck(:pool_hash_id).uniq
 	block_producing_pool_hash_ids.each do |pool_hash_id|
@@ -90,12 +91,19 @@ def populate_pool_epochs(epochNo)
 			# we calculate the percentage of estimated blocks that we performed better or worse
 			pool_epoch.blocks_delta_pc = (blocks - estimated_blocks) / estimated_blocks
 			pool_epoch.save
-			pool_epochs = PoolEpoch.where(pool_hash_id:1780).where(epoch_no:[epochNo.to_i-20..epochNo.to_i])
-			# binding.pry
+			# calculate performance below here
+			pool_epochs = PoolEpoch.where(pool_hash_id: pool_hash.id)
+				.where(epoch_no: [(epochNo.to_i-number_for_avg_performance)..epochNo.to_i])
 			pool_epoch.performance = pool_epochs.sum(:blocks_delta_pc) / pool_epochs.count
-			pool_hash.pool.performance = pool_epoch.performance
+			if pool_hash.pool
+				pool = pool_hash.pool
+			else 
+				pool = Pool.find_or_create_by(pool_hash_id: pool_hash.id, pool_addr: pool_hash.view)
+			end
+			pool.performance = pool_epoch.performance
 			pool_epoch.save
-			pool_hash.pool.save #need to? superfluous?
+			pool.save #need to? superfluous?
+			binding.pry
 		end
 	end
 	# "blocks""total_stakes""size""pool_hash_id""pool_id""epoch_no""ticker"
