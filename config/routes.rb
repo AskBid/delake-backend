@@ -24,4 +24,5 @@ Rails.application.routes.draw do
 	delete '/logout', to: 'sessions#destroy'
   get '/pools/tickers', to: 'pools#tickers'
   get '/updated', to: 'blocks#last_update'
+  get '/sample/:amount', to: 'epoch_stakes#sample'
 end
