@@ -66,7 +66,7 @@ def epochFlow_poolEpochs_dateCheck(epochNo)
 	daysDelta = (DateTime.new(2020,8,13,21,44)..DateTime.now).count % 5
 	if daysDelta === 1
 		epoch_flow(epochNo)
-		populate_pool_epochs(epochNo -= 1)
+		# populate_pool_epochs(epochNo -= 1)
 	else 
 		puts 'cannot run today as it is not first day of a new epoch'
 	end
